@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 
 import { Filters } from "../../components/Filters";
 import { RoomCard } from "../../components/RoomCard";
+import type { BoardType } from "../../data/rooms";
+import { getPriceForDateRange } from "../../shared/lib/pricing/getPriceForDateRange";
+import {
+  getOccupancyByGuests,
+  getRoomConfigBySlug
+} from "../../shared/lib/pricing/roomPricing";
 import { Container } from "../../shared/ui/Container";
 import { prisma } from "../../shared/lib/prisma";
 
@@ -13,7 +19,32 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function RoomsPage() {
+type RoomsPageProps = {
+  searchParams?: {
+    checkIn?: string;
+    checkOut?: string;
+    guests?: string;
+    board?: BoardType;
+  };
+};
+
+const parseDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+};
+
+export default async function RoomsPage({ searchParams }: RoomsPageProps) {
+  const checkIn = parseDate(searchParams?.checkIn);
+  const checkOut = parseDate(searchParams?.checkOut);
+  const guests = searchParams?.guests ? Number(searchParams.guests) : undefined;
+  const occupancy = getOccupancyByGuests(guests);
+  const board = searchParams?.board;
   const rooms = await prisma.room.findMany({
     where: { isActive: true },
     include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
@@ -61,6 +92,18 @@ export default async function RoomsPage() {
                 ))
               : rooms.map((room) => {
                   const image = room.images[0];
+                  const config = getRoomConfigBySlug(room.slug);
+                  const selectedPrice =
+                    config && checkIn && checkOut
+                      ? getPriceForDateRange(
+                          config.roomType,
+                          config.variant,
+                          occupancy,
+                          checkIn,
+                          checkOut,
+                          board
+                        )
+                      : null;
                   return (
                     <RoomCard
                       key={room.id}
@@ -68,7 +111,7 @@ export default async function RoomsPage() {
                       description={
                         room.description ?? "Описание номера скоро появится."
                       }
-                      price={`${room.basePrice} ₽/ночь`}
+                      price={`${selectedPrice ?? room.basePrice} ₽/ночь`}
                       rating={4.8}
                       amenities={room.amenities.slice(0, 3)}
                       imageUrl={image?.url}

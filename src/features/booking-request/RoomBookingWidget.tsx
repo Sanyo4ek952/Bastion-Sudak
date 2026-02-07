@@ -1,12 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
+import type { BoardType } from "../../data/rooms";
 import { bookingRequestSchema } from "./schema";
 import type { BookingRequestValues } from "./types";
 import { normalizePhone } from "../lead-form/utils";
+import { getPriceForDateRange } from "../../shared/lib/pricing/getPriceForDateRange";
+import {
+  boardDescriptions,
+  getOccupancyByGuests,
+  getRoomConfigBySlug
+} from "../../shared/lib/pricing/roomPricing";
 
 type QuoteState = {
   nights: number;
@@ -16,6 +23,12 @@ type QuoteState = {
 };
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
+
+type LocalQuote = {
+  nights: number;
+  pricePerNight: number;
+  total: number;
+};
 
 const defaultValues: BookingRequestValues = {
   name: "",
@@ -28,23 +41,84 @@ const defaultValues: BookingRequestValues = {
   consent: false
 };
 
-export function RoomBookingWidget({ roomId }: { roomId: string }) {
+const parseDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed;
+};
+
+export function RoomBookingWidget({
+  roomId,
+  roomSlug
+}: {
+  roomId: string;
+  roomSlug: string;
+}) {
   const [quote, setQuote] = useState<QuoteState | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [board, setBoard] = useState<BoardType>("RO");
 
   const {
     register,
     handleSubmit,
     getValues,
     trigger,
+    control,
     formState: { errors, isSubmitting }
   } = useForm<BookingRequestValues>({
     resolver: zodResolver(bookingRequestSchema),
     defaultValues,
     mode: "onBlur"
   });
+
+  const [checkInValue, checkOutValue, guestsValue] = useWatch({
+    control,
+    name: ["checkIn", "checkOut", "guests"]
+  });
+
+  const localQuote = useMemo<LocalQuote | null>(() => {
+    const checkIn = parseDate(checkInValue);
+    const checkOut = parseDate(checkOutValue);
+    if (!checkIn || !checkOut) {
+      return null;
+    }
+    const nights = Math.ceil(
+      (checkOut.getTime() - checkIn.getTime()) / (24 * 60 * 60 * 1000)
+    );
+    if (nights <= 0) {
+      return null;
+    }
+    const config = getRoomConfigBySlug(roomSlug);
+    if (!config) {
+      return null;
+    }
+    const occupancy = getOccupancyByGuests(
+      typeof guestsValue === "number" ? guestsValue : undefined
+    );
+    const pricePerNight = getPriceForDateRange(
+      config.roomType,
+      config.variant,
+      occupancy,
+      checkIn,
+      checkOut,
+      board
+    );
+    if (!pricePerNight) {
+      return null;
+    }
+    return {
+      nights,
+      pricePerNight,
+      total: pricePerNight * nights
+    };
+  }, [board, checkInValue, checkOutValue, guestsValue, roomSlug]);
 
   const handleQuote = async () => {
     setQuoteError(null);
@@ -164,7 +238,36 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
               <span className="text-xs text-rose-600">{errors.guests.message}</span>
             ) : null}
           </label>
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
+            План питания
+            <select
+              value={board}
+              onChange={(event) => setBoard(event.target.value as BoardType)}
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
+            >
+              <option value="RO">RO — {boardDescriptions.RO}</option>
+              <option value="BB">BB — {boardDescriptions.BB}</option>
+              <option value="HB">HB — {boardDescriptions.HB}</option>
+            </select>
+          </label>
         </div>
+
+        {localQuote ? (
+          <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-700">
+            <p className="font-semibold">Предварительный расчет</p>
+            <p className="mt-1 text-xs text-stone-500">
+              {localQuote.nights} ночей · {localQuote.pricePerNight} ₽/ночь
+            </p>
+            <p className="mt-2 text-base font-semibold text-stone-900">
+              Итого: {localQuote.total} ₽
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-500">
+            Выберите даты и план питания, чтобы увидеть стоимость.
+          </div>
+        )}
+
         <button
           type="button"
           onClick={handleQuote}
