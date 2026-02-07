@@ -20,30 +20,22 @@ cp .env.example .env
 docker run --name bastion-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=bastion_sudak -p 5432:5432 -d postgres:16
 ```
 
-2. Run Prisma migrations:
+2. Set `DATABASE_URL` in `.env`:
+
+```
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/bastion_sudak?schema=public"
+```
+
+3. Run Prisma migrations:
 
 ```bash
 pnpm prisma:migrate
 ```
 
-### Telegram notifications
-
-1. Create a Telegram bot with `@BotFather` and copy the bot token.
-2. Add the bot to the manager chat (or DM it) and get the chat ID using a helper bot like `@userinfobot`.
-3. Set the values in your `.env` file:
-   - `TELEGRAM_BOT_TOKEN`
-   - `TELEGRAM_CHAT_ID`
-
-Run locally with the env vars and send a test lead:
-
-```bash
-TELEGRAM_BOT_TOKEN=your-token TELEGRAM_CHAT_ID=your-chat-id pnpm dev
-```
-
 ```bash
 curl -X POST http://localhost:3000/api/leads \
   -H "Content-Type: application/json" \
-  -d '{"phone":"+79990000000","consent":true}'
+  -d '{"phone":"+79990000000","consent":true,"name":"Алина","guests":2,"comment":"Перезвоните после 18:00"}'
 ```
 
 ## Development
@@ -61,7 +53,7 @@ Example request:
 ```bash
 curl -X POST http://localhost:3000/api/leads \
   -H "Content-Type: application/json" \
-  -d '{"phone":"+79990001122","consent":true}'
+  -d '{"phone":"+79990001122","consent":true,"checkIn":"2024-10-12","checkOut":"2024-10-15"}'
 ```
 
 ## Checks

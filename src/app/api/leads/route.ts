@@ -1,7 +1,8 @@
+import { Prisma } from "@prisma/client";
+
 import { leadFormSchema } from "../../../features/lead-form/schema";
 import { normalizePhone } from "../../../features/lead-form/utils";
-import { prisma } from "../../../lib/prisma";
-import { sendTelegramMessage } from "../../../shared/lib/telegram/sendTelegramMessage";
+import { prisma } from "../../../shared/lib/prisma";
 
 type UtmPayload = {
   utm_source?: string;
@@ -55,34 +56,6 @@ const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
   }
 };
 
-const buildTelegramMessage = (data: {
-  phone: string;
-  name?: string;
-  checkIn?: Date;
-  checkOut?: Date;
-  guests?: number;
-  comment?: string;
-  pageUrl?: string | null;
-  utm?: UtmPayload | null;
-}) => {
-  const formatDate = (value?: Date) =>
-    value ? value.toISOString().slice(0, 10) : null;
-
-  const lines = [
-    "<b>Новая заявка (перезвонить)</b>",
-    `Телефон: ${data.phone}`,
-    data.name ? `Имя: ${data.name}` : null,
-    data.checkIn ? `Заезд: ${formatDate(data.checkIn)}` : null,
-    data.checkOut ? `Выезд: ${formatDate(data.checkOut)}` : null,
-    data.guests ? `Гостей: ${data.guests}` : null,
-    data.comment ? `Комментарий: ${data.comment}` : null,
-    data.pageUrl ? `Страница: ${data.pageUrl}` : null,
-    data.utm ? `UTM: ${JSON.stringify(data.utm)}` : null,
-  ].filter(Boolean);
-
-  return lines.join("\n");
-};
-
 export async function POST(request: Request) {
   let payload: unknown;
 
@@ -123,40 +96,29 @@ export async function POST(request: Request) {
   const userAgent = request.headers.get("user-agent");
   const utm = extractUtm(pageUrl);
   const source = utm?.utm_source ?? undefined;
-  const message = buildTelegramMessage({
-    phone: normalizedPhone,
-    name: result.data.name,
-    checkIn: checkIn ?? undefined,
-    checkOut: checkOut ?? undefined,
-    guests: result.data.guests,
-    comment: result.data.comment,
-    pageUrl,
-    utm,
-  });
 
   try {
-    await prisma.lead.create({
+    const createdLead = await prisma.lead.create({
       data: {
         name: result.data.name,
         phone: normalizedPhone,
         checkIn,
         checkOut,
-        guests: result.data.guests,
+        guests:
+          typeof result.data.guests === "number"
+            ? result.data.guests
+            : undefined,
         comment: result.data.comment,
         source,
         pageUrl,
         userAgent,
-        utm: utm ?? undefined,
+        utm: utm ?? Prisma.JsonNull,
       },
     });
 
-    try {
-      await sendTelegramMessage(message);
-    } catch (error) {
-      console.error("Telegram notification failed", error);
-    }
+    // TODO: add Telegram notification after successful lead persistence.
 
-    return Response.json({ ok: true });
+    return Response.json({ ok: true, id: createdLead.id });
   } catch (error) {
     console.error("Failed to save lead", error);
     return Response.json(

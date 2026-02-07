@@ -28,4 +28,7 @@ model Lead {
   pageUrl   String?
   userAgent String?
   utm       Json?
+
+  @@index([createdAt])
+  @@index([phone])
 }
