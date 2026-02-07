@@ -25,12 +25,12 @@ const advantages = [
 
 const rooms = [
   {
-    name: "Стандарт",
+    name: " 1-комнатный стандарт с балконом, вид на море и/или горы",
     description: "Компактный номер для двоих с видом во внутренний двор.",
     price: "4 900 ₽/ночь",
     rating: 4.7,
     amenities: ["Wi‑Fi", "Кондиционер", "Душ"],
-    imageUrl: "/images/room-1.svg"
+    imageUrl: "/images/one-korpus/01.jpg"
   },
   {
     name: "Комфорт с балконом",
@@ -74,7 +74,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden pb-16 pt-20">
         <div className="absolute inset-0">
           <Image
-            src="/images/hero.svg"
+            src="/images/bastion.jpg"
             alt="Бастион, Судак"
             fill
             className="object-cover"
