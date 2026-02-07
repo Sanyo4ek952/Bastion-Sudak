@@ -12,18 +12,11 @@ Create a `.env` file using `.env.example` and update the values for your local s
 cp .env.example .env
 ```
 
-Set admin basic auth credentials for protected `/admin/*` routes:
+Set admin basic auth credentials for protected `/admin/*` and `/api/admin/*` routes:
 
 ```
 ADMIN_BASIC_USER="admin"
 ADMIN_BASIC_PASS="change-me"
-```
-
-Set Telegram notifications (optional; if not set, notifications are disabled):
-
-```
-TELEGRAM_BOT_TOKEN="your-bot-token"
-TELEGRAM_CHAT_ID="your-chat-id"
 ```
 
 ### Postgres + Prisma
@@ -46,10 +39,10 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/bastion_sudak?schema
 pnpm prisma:migrate
 ```
 
+4. Seed demo data (rooms + seasonal rates):
+
 ```bash
-curl -X POST http://localhost:3000/api/leads \
-  -H "Content-Type: application/json" \
-  -d '{"phone":"+79990000000","consent":true,"name":"Алина","guests":2,"comment":"Перезвоните после 18:00"}'
+pnpm prisma:seed
 ```
 
 ## Development
@@ -58,9 +51,9 @@ curl -X POST http://localhost:3000/api/leads \
 pnpm dev
 ```
 
-## Lead form API
+## Endpoints
 
-Endpoint: `POST /api/leads`
+Lead form: `POST /api/leads`
 
 Notes:
 - Honeypot field: send `website` (should be empty); if filled, the API returns `{ ok: true }` without saving.
@@ -73,6 +66,22 @@ curl -X POST http://localhost:3000/api/leads \
   -H "Content-Type: application/json" \
   -d '{"phone":"+79990001122","consent":true,"checkIn":"2024-10-12","checkOut":"2024-10-15","website":""}'
 ```
+
+Booking requests: `POST /api/booking-requests`
+
+Quote calculation: `GET /api/quote?roomId=...&checkIn=YYYY-MM-DD&checkOut=YYYY-MM-DD`
+
+Health check: `GET /api/health`
+
+## Manual testing (E2E)
+
+1. Open `/` and submit the lead form (“Мы вам перезвоним”).
+2. Visit `/rooms`, open a room card, and calculate a price.
+3. Submit a booking request from `/rooms/[slug]`.
+4. Open `/prices` to see base and seasonal prices.
+5. Open `/admin/rooms` to manage rooms.
+6. Open `/admin/prices` to manage seasonal overrides.
+7. Open `/admin/requests` to review and update request statuses.
 
 ## Checks
 

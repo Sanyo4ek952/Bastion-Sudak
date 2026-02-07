@@ -32,7 +32,7 @@ const unauthorizedResponse = (): NextResponse =>
   });
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
 
 export const middleware = (request: NextRequest): NextResponse => {

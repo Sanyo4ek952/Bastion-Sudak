@@ -1,10 +1,24 @@
-import { leadFormSchema } from "../../../features/lead-form/schema";
-import { normalizePhone } from "../../../features/lead-form/utils";
+import { z } from "zod";
+
+import { buildQuote } from "../../../shared/lib/pricing/quote";
 import { prisma } from "../../../shared/lib/prisma";
+import { normalizePhone } from "../../../features/lead-form/utils";
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 10;
 const rateLimitBuckets = new Map<string, number[]>();
+
+const payloadSchema = z.object({
+  roomId: z.string().optional(),
+  name: z.string().trim().max(50).optional(),
+  phone: z.string().min(1),
+  checkIn: z.string().optional(),
+  checkOut: z.string().optional(),
+  guests: z.number().int().min(1).max(10).optional(),
+  comment: z.string().trim().max(500).optional(),
+  consent: z.boolean(),
+  website: z.string().optional()
+});
 
 type UtmPayload = {
   utm_source?: string;
@@ -81,7 +95,7 @@ const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
       "utm_medium",
       "utm_campaign",
       "utm_term",
-      "utm_content",
+      "utm_content"
     ] as const;
     const payload: UtmPayload = {};
 
@@ -99,7 +113,6 @@ const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
   }
 };
 
-
 export async function POST(request: Request) {
   let payload: unknown;
   const ip = getClientIp(request);
@@ -114,7 +127,7 @@ export async function POST(request: Request) {
   }
 
   if (hasHoneypotValue(payload)) {
-    console.info("Lead honeypot triggered", { ip });
+    console.info("BookingRequest honeypot triggered", { ip });
     return Response.json({ ok: true });
   }
 
@@ -125,20 +138,22 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = leadFormSchema.safeParse(payload);
+  const result = payloadSchema.safeParse(payload);
 
   if (!result.success) {
     return Response.json(
-      {
-        ok: false,
-        message: "Ошибка валидации",
-        issues: result.error.issues,
-      },
+      { ok: false, message: "Ошибка валидации", issues: result.error.issues },
       { status: 400 }
     );
   }
 
-  const normalizedPhone = normalizePhone(result.data.phone);
+  if (!result.data.consent) {
+    return Response.json(
+      { ok: false, message: "Необходимо согласие" },
+      { status: 400 }
+    );
+  }
+
   const checkIn = parseOptionalDate(result.data.checkIn);
   const checkOut = parseOptionalDate(result.data.checkOut);
 
@@ -148,35 +163,67 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  if (checkIn && checkOut && checkOut < checkIn) {
+    return Response.json(
+      { ok: false, message: "Дата выезда должна быть позже даты заезда" },
+      { status: 400 }
+    );
+  }
 
   const pageUrl = request.headers.get("referer");
   const userAgent = request.headers.get("user-agent");
   const utm = extractUtm(pageUrl);
   const source = utm?.utm_source ?? undefined;
+  const normalizedPhone = normalizePhone(result.data.phone);
+
+  let totalPrice: number | undefined;
+  if (result.data.roomId) {
+    const room = await prisma.room.findUnique({
+      where: { id: result.data.roomId },
+      select: { id: true }
+    });
+    if (!room) {
+      return Response.json(
+        { ok: false, message: "Номер не найден" },
+        { status: 400 }
+      );
+    }
+
+    if (checkIn && checkOut) {
+      try {
+        const quote = await buildQuote({
+          roomId: result.data.roomId,
+          checkIn,
+          checkOut
+        });
+        totalPrice = quote.total;
+      } catch (error) {
+        totalPrice = undefined;
+      }
+    }
+  }
 
   try {
-    const createdLead = await prisma.bookingRequest.create({
+    const created = await prisma.bookingRequest.create({
       data: {
+        roomId: result.data.roomId,
         name: result.data.name,
         phone: normalizedPhone,
         checkIn,
         checkOut,
-        guests:
-          typeof result.data.guests === "number"
-            ? result.data.guests
-            : undefined,
+        guests: result.data.guests,
         comment: result.data.comment,
+        totalPrice,
         source,
         pageUrl,
         userAgent,
-        utm: utm ?? undefined,
-        status: "NEW"
-      },
+        utm: utm ?? undefined
+      }
     });
 
-    return Response.json({ ok: true, id: createdLead.id });
+    return Response.json({ ok: true, id: created.id });
   } catch (error) {
-    console.error("Failed to save lead", { ip, error });
+    console.error("Failed to save booking request", { ip, error });
     return Response.json(
       { ok: false, message: "Ошибка сервера" },
       { status: 500 }
