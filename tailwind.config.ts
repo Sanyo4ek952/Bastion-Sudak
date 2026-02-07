@@ -5,21 +5,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        muted: "hsl(var(--muted))",
-        card: "hsl(var(--card))",
-        border: "hsl(var(--border))",
-        accent: "hsl(var(--accent))",
-        "accent-foreground": "hsl(var(--accent-foreground))",
-        primary: "hsl(var(--primary))",
-        "primary-foreground": "hsl(var(--primary-foreground))",
-        header: "hsl(var(--header))",
-        gold: "hsl(var(--gold))"
+        "sand-50": "#F7F4EF",
+        "sand-100": "#EFE9DF",
+        "stone-600": "#6B6258",
+        "stone-900": "#2B2A28",
+        "sea-500": "#5FA8A3",
+        "sea-600": "#4C918C",
+        "gold-500": "#C6A15B",
+        "gold-soft": "#E9D9B6"
       },
       fontFamily: {
-        sans: ["Arial", "system-ui", "sans-serif"],
-        display: ["\"Century Gothic\"", "\"Trebuchet MS\"", "Arial", "sans-serif"]
+        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+        heading: [
+          "var(--font-manrope)",
+          "Manrope",
+          "DM Sans",
+          "sans-serif"
+        ]
       }
     }
   },

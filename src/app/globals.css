@@ -2,122 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-  --background: 43 86% 86%;
-  --foreground: 24 32% 5%;
-  --muted: 37 80% 75%;
-  --card: 37 90% 92%;
-  --border: 24 30% 35%;
-  --accent: 18 70% 25%;
-  --accent-foreground: 40 80% 85%;
-  --primary: 24 40% 20%;
-  --primary-foreground: 37 85% 70%;
-  --header: 24 40% 20%;
-  --gold: 37 81% 69%;
-}
-
-body {
-  @apply bg-background text-foreground;
-  background-image: radial-gradient(
-      circle at top left,
-      rgba(255, 255, 255, 0.45),
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at bottom right,
-      rgba(240, 191, 111, 0.3),
-      transparent 55%
-    ),
-    linear-gradient(180deg, rgba(255, 239, 210, 0.65), transparent 40%),
-    linear-gradient(
-      90deg,
-      rgba(89, 44, 1, 0.03) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      0deg,
-      rgba(89, 44, 1, 0.03) 1px,
-      transparent 1px
-    );
-  background-size:
-    1200px 600px,
-    1200px 600px,
-    100% 100%,
-    24px 24px,
-    24px 24px;
-}
-
 @layer base {
   *,
   ::before,
   ::after {
-    @apply border-border;
+    @apply box-border;
   }
 
   body {
-    @apply font-sans antialiased;
+    @apply bg-sand-50 font-sans text-stone-600 antialiased;
   }
 
   h1 {
-    @apply font-display text-[2.75rem] font-semibold leading-tight tracking-tight sm:text-[3.25rem];
+    @apply font-heading text-[3.5rem] leading-[4rem] text-stone-900;
   }
 
   h2 {
-    @apply font-display text-[2rem] font-semibold leading-snug tracking-tight sm:text-[2.5rem];
+    @apply font-heading text-[2.5rem] leading-[3rem] text-stone-900;
   }
 
   h3 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply font-heading text-[1.75rem] leading-[2rem] text-stone-900;
   }
 
   p {
-    @apply text-base leading-7 text-foreground/80;
+    @apply text-base leading-6;
   }
 }
 
 @layer utilities {
-  .b-surface {
-    background-color: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 10px;
-    box-shadow: 0 12px 30px -18px rgba(51, 24, 0, 0.25);
+  .text-body-large {
+    @apply text-[1.125rem] leading-7;
   }
 
-  .b-divider {
-    position: relative;
-    height: 1px;
-    width: 100%;
-    background: linear-gradient(
-      to right,
-      transparent,
-      hsl(var(--gold) / 0.6),
-      transparent
-    );
+  .text-caption {
+    @apply text-[0.8125rem] leading-[1.125rem];
   }
 
-  .b-divider::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 8px;
-    height: 8px;
-    transform: translate(-50%, -50%) rotate(45deg);
-    border: 1px solid hsl(var(--gold) / 0.7);
-    background: hsl(var(--card));
-  }
-
-  .b-glow:hover {
-    box-shadow: 0 0 18px rgba(240, 191, 111, 0.35);
-  }
-
-  .b-shine {
-    background-image: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.3),
-      rgba(255, 255, 255, 0)
-    );
-    background-blend-mode: screen;
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sea-500 focus-visible:ring-offset-2 focus-visible:ring-offset-sand-50;
   }
 }

@@ -122,40 +122,40 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">
+      <div className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]">
+        <h3 className="text-lg font-semibold text-stone-900">
           Рассчитать стоимость
         </h3>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
             Дата заезда
             <input
               type="date"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
               {...register("checkIn")}
             />
             {errors.checkIn ? (
               <span className="text-xs text-rose-600">{errors.checkIn.message}</span>
             ) : null}
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
             Дата выезда
             <input
               type="date"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
               {...register("checkOut")}
             />
             {errors.checkOut ? (
               <span className="text-xs text-rose-600">{errors.checkOut.message}</span>
             ) : null}
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
             Гостей
             <input
               type="number"
               min={1}
               max={10}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
               {...register("guests", {
                 setValueAs: (value) => (value === "" ? undefined : Number(value))
               })}
@@ -168,12 +168,12 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
         <button
           type="button"
           onClick={handleQuote}
-          className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
+          className="mt-4 inline-flex items-center justify-center rounded-full border border-sand-100 px-5 py-2 text-sm font-semibold text-stone-600 transition duration-150 ease-out hover:border-sea-500 hover:text-stone-900"
         >
           Рассчитать стоимость
         </button>
         {quoteError ? (
-          <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {quoteError}
           </div>
         ) : null}
@@ -195,9 +195,9 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
 
       <form
         onSubmit={onSubmit}
-        className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]"
       >
-        <h3 className="text-lg font-semibold text-slate-900">
+        <h3 className="text-lg font-semibold text-stone-900">
           Запросить бронирование
         </h3>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -208,11 +208,11 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
             Website
             <input type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
             Имя
             <input
               type="text"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
               placeholder="Анна"
               {...register("name")}
             />
@@ -220,11 +220,11 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
               <span className="text-xs text-rose-600">{errors.name.message}</span>
             ) : null}
           </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
             Телефон *
             <input
               type="tel"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
               placeholder="+7 (900) 000-00-00"
               {...register("phone")}
             />
@@ -233,11 +233,11 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
             ) : null}
           </label>
         </div>
-        <label className="mt-4 flex flex-col gap-2 text-sm text-slate-700">
+        <label className="mt-4 flex flex-col gap-2 text-sm text-stone-600">
           Комментарий
           <textarea
             rows={4}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
             placeholder="Например, нужна детская кроватка"
             {...register("comment")}
           />
@@ -245,10 +245,10 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
             <span className="text-xs text-rose-600">{errors.comment.message}</span>
           ) : null}
         </label>
-        <label className="mt-4 flex items-start gap-2 text-sm text-slate-700">
+        <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-slate-300"
+            className="mt-1 h-4 w-4 rounded border-sand-100 accent-sea-500 focus-ring"
             {...register("consent")}
           />
           <span>
@@ -261,20 +261,20 @@ export function RoomBookingWidget({ roomId }: { roomId: string }) {
         ) : null}
 
         {submitError ? (
-          <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {submitError}
           </div>
         ) : null}
 
         {status === "success" ? (
-          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             Спасибо! Мы свяжемся с вами для подтверждения бронирования.
           </div>
         ) : null}
 
         <button
           type="submit"
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-sea-500 px-6 py-3 text-sm font-semibold text-sand-50 transition duration-150 ease-out hover:bg-sea-600 disabled:cursor-not-allowed disabled:bg-sand-100 disabled:text-stone-600"
           disabled={status === "loading" || isSubmitting}
         >
           {status === "loading" || isSubmitting
