@@ -101,4 +101,5 @@ Health check: `GET /api/health`
 pnpm lint
 pnpm typecheck
 pnpm build
+pnpm test
 ```
