@@ -55,12 +55,16 @@ pnpm dev
 
 Endpoint: `POST /api/leads`
 
+Notes:
+- Honeypot field: send `website` (should be empty); if filled, the API returns `{ ok: true }` without saving.
+- Rate limit: 10 requests per 10 minutes per IP (returns 429 on limit).
+
 Example request:
 
 ```bash
 curl -X POST http://localhost:3000/api/leads \
   -H "Content-Type: application/json" \
-  -d '{"phone":"+79990001122","consent":true,"checkIn":"2024-10-12","checkOut":"2024-10-15"}'
+  -d '{"phone":"+79990001122","consent":true,"checkIn":"2024-10-12","checkOut":"2024-10-15","website":""}'
 ```
 
 ## Checks

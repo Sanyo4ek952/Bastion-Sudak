@@ -29,6 +29,7 @@ export const leadFormSchema = z
         (value) => countPhoneDigits(normalizePhone(value)) >= 10,
         "Введите номер телефона не короче 10 цифр"
       ),
+    website: optionalTrimmedString(100),
     checkIn: optionalDateString,
     checkOut: optionalDateString,
     guests: optionalGuests,

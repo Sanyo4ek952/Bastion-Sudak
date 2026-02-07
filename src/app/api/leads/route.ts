@@ -4,6 +4,10 @@ import { leadFormSchema } from "../../../features/lead-form/schema";
 import { normalizePhone } from "../../../features/lead-form/utils";
 import { prisma } from "../../../shared/lib/prisma";
 
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 10;
+const rateLimitBuckets = new Map<string, number[]>();
+
 type UtmPayload = {
   utm_source?: string;
   utm_medium?: string;
@@ -24,6 +28,47 @@ const parseOptionalDate = (value?: string) => {
   }
 
   return parsed;
+};
+
+const getClientIp = (request: Request) => {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  }
+
+  return request.headers.get("x-real-ip") ?? "unknown";
+};
+
+const isRateLimited = (ip: string) => {
+  const now = Date.now();
+  const existing = rateLimitBuckets.get(ip) ?? [];
+  const recent = existing.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+
+  if (recent.length >= RATE_LIMIT_MAX) {
+    rateLimitBuckets.set(ip, recent);
+    return true;
+  }
+
+  recent.push(now);
+  rateLimitBuckets.set(ip, recent);
+  return false;
+};
+
+const hasHoneypotValue = (payload: unknown) => {
+  if (!payload || typeof payload !== "object") {
+    return false;
+  }
+
+  if (!("website" in payload)) {
+    return false;
+  }
+
+  const value = (payload as { website?: unknown }).website;
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  return value.trim().length > 0;
 };
 
 const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
@@ -58,6 +103,7 @@ const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
 
 export async function POST(request: Request) {
   let payload: unknown;
+  const ip = getClientIp(request);
 
   try {
     payload = await request.json();
@@ -65,6 +111,18 @@ export async function POST(request: Request) {
     return Response.json(
       { ok: false, message: "Некорректный JSON" },
       { status: 400 }
+    );
+  }
+
+  if (hasHoneypotValue(payload)) {
+    console.info("Lead honeypot triggered", { ip });
+    return Response.json({ ok: true });
+  }
+
+  if (isRateLimited(ip)) {
+    return Response.json(
+      { ok: false, message: "Слишком много запросов. Попробуйте позже." },
+      { status: 429 }
     );
   }
 
@@ -120,7 +178,7 @@ export async function POST(request: Request) {
 
     return Response.json({ ok: true, id: createdLead.id });
   } catch (error) {
-    console.error("Failed to save lead", error);
+    console.error("Failed to save lead", { ip, error });
     return Response.json(
       { ok: false, message: "Ошибка сервера" },
       { status: 500 }
