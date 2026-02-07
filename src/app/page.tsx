@@ -1,132 +1,251 @@
 import Link from "next/link";
 
 import { LeadForm } from "../features/lead-form/LeadForm";
-import { prisma } from "../shared/lib/prisma";
+import { Badge } from "../shared/ui/Badge";
+import { buttonVariants } from "../shared/ui/Button";
+import { Card } from "../shared/ui/Card";
+import { Container } from "../shared/ui/Container";
+import { SectionHeader } from "../shared/ui/SectionHeader";
 
-export const dynamic = "force-dynamic";
+const advantages = [
+  {
+    title: "10 минут до моря",
+    description: "Быстрый выход к пляжу и набережной Судака.",
+  },
+  {
+    title: "Уютные номера",
+    description: "Тихие интерьеры, кондиционер и комфортный сон.",
+  },
+  {
+    title: "Гибкие даты",
+    description: "Поможем подобрать заезд и выезд под ваш маршрут.",
+  },
+  {
+    title: "Честные цены",
+    description: "Прямое бронирование без скрытых комиссий.",
+  },
+];
 
-export default async function HomePage() {
-  const rooms = await prisma.room.findMany({
-    where: { isActive: true },
-    include: { images: { orderBy: { sortOrder: "asc" }, take: 1 } },
-    orderBy: { createdAt: "desc" },
-    take: 3
-  });
+const roomPreviews = [
+  {
+    name: "Стандарт",
+    capacity: "2 гостя",
+    price: "от 4 900 ₽/ночь",
+  },
+  {
+    name: "Комфорт с балконом",
+    capacity: "до 3 гостей",
+    price: "от 6 200 ₽/ночь",
+  },
+  {
+    name: "Семейный",
+    capacity: "до 4 гостей",
+    price: "от 7 800 ₽/ночь",
+  },
+];
 
+const galleryItems = Array.from({ length: 6 }, (_, index) => index);
+
+export default function HomePage() {
   return (
-    <main className="flex flex-col gap-16">
-      <section className="flex flex-col gap-4">
-        <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
-          Hotel Bastion
-        </p>
-        <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl">
-          Комфортный отдых в Судаке
-        </h1>
-        <p className="max-w-2xl text-base text-slate-600">
-          Небольшой отель у моря с уютными номерами, гибкими тарифами и
-          внимательным сервисом. Оставьте заявку — мы перезвоним и поможем с
-          выбором.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="#lead-form"
-            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Оставить заявку
-          </a>
-          <Link
-            href="/rooms"
-            className="inline-flex items-center justify-center rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-          >
-            Смотреть номера
-          </Link>
-        </div>
+    <>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-amber-100/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(14,116,144,0.18)_1px,transparent_0)] [background-size:24px_24px] opacity-50" />
+        <Container className="relative flex flex-col gap-10 py-12 sm:py-16">
+          <Badge>Hotel Bastion</Badge>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="space-y-6">
+              <h1>Комфортный отдых в Судаке, где все рядом</h1>
+              <p className="max-w-xl text-lg text-foreground/80">
+                Небольшой отель у моря с уютными номерами, тишиной и заботой.
+                Оставьте заявку — мы перезвоним и подберем лучший вариант.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#lead-form"
+                  className={buttonVariants({ size: "lg" })}
+                >
+                  Оставить заявку
+                </a>
+                <a
+                  href="tel:+79990001122"
+                  className={buttonVariants({ variant: "secondary", size: "lg" })}
+                >
+                  Позвонить
+                </a>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {["Море рядом", "Новый ремонт", "Тихий двор"].map((item) => (
+                <Card
+                  key={item}
+                  className="flex min-h-[120px] flex-col justify-between"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                      2025
+                    </span>
+                    <span className="h-10 w-10 rounded-full bg-accent/10" />
+                  </div>
+                  <p className="text-lg font-semibold text-foreground">{item}</p>
+                </Card>
+              ))}
+              <Card className="sm:col-span-2">
+                <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                  Локация
+                </p>
+                <p className="mt-2 text-lg font-semibold text-foreground">
+                  Судак • прогулка до набережной
+                </p>
+                <p className="mt-2 text-sm text-foreground/70">
+                  Маршруты по Крыму, кафе и достопримечательности в пешей
+                  доступности.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </Container>
       </section>
 
-      <section className="flex flex-col gap-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
-              Номера
-            </p>
-            <h2 className="text-2xl font-semibold text-slate-900">
-              Подберите вариант размещения
-            </h2>
-          </div>
-          <Link
-            className="text-sm font-medium text-slate-600 hover:text-slate-900"
-            href="/rooms"
-          >
-            Все номера →
-          </Link>
-        </div>
-        <div className="grid gap-6 md:grid-cols-3">
-          {rooms.map((room) => {
-            const image = room.images[0];
-            return (
-              <article
-                key={room.id}
-                className="flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
-              >
-                <div className="relative h-40 w-full bg-slate-100">
-                  {image ? (
-                    <img
-                      src={image.url}
-                      alt={image.alt ?? room.name}
-                      className="h-full w-full object-cover"
+      <section id="advantages">
+        <Container className="flex flex-col gap-10">
+          <SectionHeader
+            eyebrow="Преимущества"
+            title="Теплый сервис и продуманные детали"
+            subtitle="Мы продумали все, чтобы отдых был спокойным: от приятной атмосферы до быстрых ответов менеджера."
+          />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {advantages.map((advantage) => (
+              <Card key={advantage.title}>
+                <div className="flex items-center justify-between">
+                  <span className="h-12 w-12 rounded-full bg-accent/10" />
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <circle cx="14" cy="14" r="13" stroke="currentColor" />
+                    <path
+                      d="M9 14.5L12.5 18L19.5 10"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
-                  ) : null}
+                  </svg>
                 </div>
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-slate-900">
-                      {room.name}
-                    </h3>
-                    <p className="text-sm text-slate-600">
-                      До {room.capacity} гостей
+                <h3 className="mt-4 text-lg">{advantage.title}</h3>
+                <p className="mt-2 text-sm">{advantage.description}</p>
+              </Card>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section id="rooms">
+        <Container className="flex flex-col gap-10">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeader
+              eyebrow="Номера"
+              title="Выберите комфортный формат проживания"
+              subtitle="Предпросмотр категорий — подключим реальные номера и цены позже."
+            />
+            <Link
+              href="/rooms"
+              className="text-sm font-semibold text-foreground/70 transition hover:text-foreground"
+            >
+              Смотреть все →
+            </Link>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {roomPreviews.map((room) => (
+              <Card key={room.name} className="flex h-full flex-col gap-6">
+                <div className="h-36 w-full rounded-xl bg-gradient-to-br from-accent/20 via-white to-amber-100" />
+                <div className="flex flex-1 flex-col gap-3">
+                  <div>
+                    <h3 className="text-lg">{room.name}</h3>
+                    <p className="text-sm text-foreground/70">
+                      {room.capacity}
                     </p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-slate-900">
-                      от {room.basePrice} ₽/ночь
-                    </span>
-                    <Link
-                      className="text-sm font-medium text-slate-600 hover:text-slate-900"
-                      href={`/rooms/${room.slug}`}
-                    >
-                      Подробнее →
-                    </Link>
+                  <div className="mt-auto flex items-center justify-between text-sm font-semibold text-foreground">
+                    <span>{room.price}</span>
+                    <span className="text-foreground/50">Фото скоро</span>
                   </div>
                 </div>
-              </article>
-            );
-          })}
-        </div>
+              </Card>
+            ))}
+          </div>
+        </Container>
       </section>
 
-      <section
-        id="lead-form"
-        className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
-      >
-        <div className="mb-6 flex flex-col gap-2">
-          <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
-            Мы вам перезвоним
-          </p>
-          <h2 className="text-2xl font-semibold text-slate-900">
-            Оставьте заявку на подбор номера
-          </h2>
-          <p className="text-base text-slate-600">
-            Уточним детали поездки и предложим лучший вариант размещения.
-          </p>
-        </div>
-        <LeadForm />
+      <section id="gallery">
+        <Container className="flex flex-col gap-10">
+          <SectionHeader
+            eyebrow="Галерея"
+            title="Атмосфера, которая создает настроение отпуска"
+            subtitle="Скоро добавим реальные фото номеров и территории."
+          />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {galleryItems.map((item) => (
+              <div
+                key={item}
+                className="h-44 rounded-2xl border border-border bg-gradient-to-br from-slate-100 via-white to-amber-100 shadow-sm"
+              />
+            ))}
+          </div>
+        </Container>
       </section>
 
-      <div className="text-xs text-slate-400">
-        <a className="hover:text-slate-600" href="/admin/requests">
-          Admin
-        </a>
-      </div>
-    </main>
+      <section id="contacts">
+        <Container className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <SectionHeader
+            eyebrow="Контакты"
+            title="Подскажем детали и поможем с маршрутом"
+            subtitle="Свяжитесь с нами удобным способом — ответим в рабочее время."
+          />
+          <Card className="space-y-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                Телефон
+              </p>
+              <a className="text-lg font-semibold" href="tel:+79990001122">
+                +7 (999) 000-11-22
+              </a>
+            </div>
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                Адрес
+              </p>
+              <p>Судак, рядом с набережной (уточняется)</p>
+            </div>
+            <a
+              className="inline-flex items-center gap-2 text-sm font-semibold text-accent"
+              href="#"
+            >
+              Посмотреть на карте
+              <span aria-hidden="true">→</span>
+            </a>
+          </Card>
+        </Container>
+      </section>
+
+      <section id="lead-form">
+        <Container>
+          <Card className="space-y-6">
+            <SectionHeader
+              eyebrow="Мы вам перезвоним"
+              title="Оставьте заявку на подбор номера"
+              subtitle="Уточним детали поездки и предложим лучший вариант размещения."
+            />
+            <LeadForm />
+          </Card>
+        </Container>
+      </section>
+    </>
   );
 }
