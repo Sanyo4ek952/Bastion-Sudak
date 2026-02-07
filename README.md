@@ -19,6 +19,13 @@ ADMIN_BASIC_USER="admin"
 ADMIN_BASIC_PASS="change-me"
 ```
 
+Set Telegram notifications (optional; if not set, notifications are disabled):
+
+```
+TELEGRAM_BOT_TOKEN="your-bot-token"
+TELEGRAM_CHAT_ID="your-chat-id"
+```
+
 ### Postgres + Prisma
 
 1. Start a local Postgres instance (for example, via Docker):
