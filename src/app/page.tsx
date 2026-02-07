@@ -50,16 +50,16 @@ export default function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-amber-100/40" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(14,116,144,0.18)_1px,transparent_0)] [background-size:24px_24px] opacity-50" />
-        <Container className="relative flex flex-col gap-10 py-12 sm:py-16">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(240,191,111,0.3),transparent_55%)]" />
+        <Container className="relative flex flex-col gap-12 py-8 sm:py-12">
           <Badge>Hotel Bastion</Badge>
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div className="space-y-6">
               <h1>Комфортный отдых в Судаке, где все рядом</h1>
               <p className="max-w-xl text-lg text-foreground/80">
-                Небольшой отель у моря с уютными номерами, тишиной и заботой.
-                Оставьте заявку — мы перезвоним и подберем лучший вариант.
+                Небольшой отель у моря с камерной атмосферой и вниманием к
+                деталям. Оставьте заявку — мы перезвоним и подберем лучший
+                вариант проживания.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
@@ -75,24 +75,36 @@ export default function HomePage() {
                   Позвонить
                 </a>
               </div>
+              <div className="flex flex-wrap gap-3">
+                {["Море в 10 минутах", "Новый ремонт 2025", "Тихий двор"].map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-border bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-foreground/70"
+                    >
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {["Море рядом", "Новый ремонт", "Тихий двор"].map((item) => (
                 <Card
                   key={item}
-                  className="flex min-h-[120px] flex-col justify-between"
+                  className="flex min-h-[130px] flex-col justify-between bg-[#FFCD96]/50"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                    <span className="text-xs uppercase tracking-[0.3em] text-foreground/60">
                       2025
                     </span>
-                    <span className="h-10 w-10 rounded-full bg-accent/10" />
+                    <span className="h-10 w-10 rounded-full border border-gold/40 bg-white/60" />
                   </div>
                   <p className="text-lg font-semibold text-foreground">{item}</p>
                 </Card>
               ))}
               <Card className="sm:col-span-2">
-                <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
+                <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
                   Локация
                 </p>
                 <p className="mt-2 text-lg font-semibold text-foreground">
@@ -119,7 +131,7 @@ export default function HomePage() {
             {advantages.map((advantage) => (
               <Card key={advantage.title}>
                 <div className="flex items-center justify-between">
-                  <span className="h-12 w-12 rounded-full bg-accent/10" />
+                  <span className="h-12 w-12 rounded-full border border-gold/40 bg-white/70" />
                   <svg
                     width="28"
                     height="28"
@@ -164,7 +176,7 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-3">
             {roomPreviews.map((room) => (
               <Card key={room.name} className="flex h-full flex-col gap-6">
-                <div className="h-36 w-full rounded-xl bg-gradient-to-br from-accent/20 via-white to-amber-100" />
+                <div className="h-36 w-full rounded-xl bg-gradient-to-br from-[#FFCD96] via-white to-[#F7D9A9]" />
                 <div className="flex flex-1 flex-col gap-3">
                   <div>
                     <h3 className="text-lg">{room.name}</h3>
@@ -194,7 +206,7 @@ export default function HomePage() {
             {galleryItems.map((item) => (
               <div
                 key={item}
-                className="h-44 rounded-2xl border border-border bg-gradient-to-br from-slate-100 via-white to-amber-100 shadow-sm"
+                className="h-44 rounded-2xl border border-border bg-gradient-to-br from-white via-[#FFF6E3] to-[#F7D9A9] shadow-[0_12px_30px_-24px_rgba(51,24,0,0.35)]"
               />
             ))}
           </div>
@@ -208,7 +220,7 @@ export default function HomePage() {
             title="Подскажем детали и поможем с маршрутом"
             subtitle="Свяжитесь с нами удобным способом — ответим в рабочее время."
           />
-          <Card className="space-y-4">
+          <Card className="space-y-4 bg-[#FFCD96]/40">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
                 Телефон
@@ -224,7 +236,7 @@ export default function HomePage() {
               <p>Судак, рядом с набережной (уточняется)</p>
             </div>
             <a
-              className="inline-flex items-center gap-2 text-sm font-semibold text-accent"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-header transition duration-150 hover:text-header/80"
               href="#"
             >
               Посмотреть на карте
@@ -236,7 +248,7 @@ export default function HomePage() {
 
       <section id="lead-form">
         <Container>
-          <Card className="space-y-6">
+          <Card className="space-y-6 bg-[#FFF6E3]">
             <SectionHeader
               eyebrow="Мы вам перезвоним"
               title="Оставьте заявку на подбор номера"

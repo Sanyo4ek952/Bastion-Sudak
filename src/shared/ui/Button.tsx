@@ -10,19 +10,20 @@ type ButtonVariantProps = {
 };
 
 const baseClasses =
-  "inline-flex items-center justify-center rounded-full font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-[10px] font-semibold transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60";
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-foreground hover:bg-accent/90",
+  primary:
+    "bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(105,42,0,0.7)] hover:bg-primary/90",
   secondary:
-    "border border-border bg-card text-foreground hover:border-foreground/20 hover:text-foreground",
-  ghost: "text-foreground hover:bg-muted",
+    "border border-header/50 bg-transparent text-header hover:border-header/70 hover:bg-card",
+  ghost: "text-header hover:bg-muted",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
   sm: "px-4 py-2 text-sm",
   md: "px-5 py-2.5 text-sm",
-  lg: "px-6 py-3 text-base",
+  lg: "px-7 py-3 text-base",
 };
 
 export function buttonVariants({
