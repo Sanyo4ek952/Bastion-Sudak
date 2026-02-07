@@ -1,6 +1,7 @@
 import { leadFormSchema } from "../../../features/lead-form/schema";
 import { normalizePhone } from "../../../features/lead-form/utils";
 import { prisma } from "../../../lib/prisma";
+import { sendTelegramMessage } from "../../../shared/lib/telegram/sendTelegramMessage";
 
 type UtmPayload = {
   utm_source?: string;
@@ -64,12 +65,15 @@ const buildTelegramMessage = (data: {
   pageUrl?: string | null;
   utm?: UtmPayload | null;
 }) => {
+  const formatDate = (value?: Date) =>
+    value ? value.toISOString().slice(0, 10) : null;
+
   const lines = [
-    "Новая заявка с сайта Bastion Sudak",
+    "<b>Новая заявка (перезвонить)</b>",
     `Телефон: ${data.phone}`,
     data.name ? `Имя: ${data.name}` : null,
-    data.checkIn ? `Заезд: ${data.checkIn.toISOString().slice(0, 10)}` : null,
-    data.checkOut ? `Выезд: ${data.checkOut.toISOString().slice(0, 10)}` : null,
+    data.checkIn ? `Заезд: ${formatDate(data.checkIn)}` : null,
+    data.checkOut ? `Выезд: ${formatDate(data.checkOut)}` : null,
     data.guests ? `Гостей: ${data.guests}` : null,
     data.comment ? `Комментарий: ${data.comment}` : null,
     data.pageUrl ? `Страница: ${data.pageUrl}` : null,
@@ -77,32 +81,6 @@ const buildTelegramMessage = (data: {
   ].filter(Boolean);
 
   return lines.join("\n");
-};
-
-const notifyTelegram = async (message: string) => {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-
-  if (!token || !chatId) {
-    console.warn("Telegram уведомления отключены: не заданы переменные окружения");
-    return;
-  }
-
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
-    }),
-  });
-
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Telegram API error: ${response.status} ${body}`);
-  }
 };
 
 export async function POST(request: Request) {
@@ -145,9 +123,19 @@ export async function POST(request: Request) {
   const userAgent = request.headers.get("user-agent");
   const utm = extractUtm(pageUrl);
   const source = utm?.utm_source ?? undefined;
+  const message = buildTelegramMessage({
+    phone: normalizedPhone,
+    name: result.data.name,
+    checkIn: checkIn ?? undefined,
+    checkOut: checkOut ?? undefined,
+    guests: result.data.guests,
+    comment: result.data.comment,
+    pageUrl,
+    utm,
+  });
 
   try {
-    const lead = await prisma.lead.create({
+    await prisma.lead.create({
       data: {
         name: result.data.name,
         phone: normalizedPhone,
@@ -162,19 +150,8 @@ export async function POST(request: Request) {
       },
     });
 
-    const message = buildTelegramMessage({
-      phone: normalizedPhone,
-      name: lead.name ?? undefined,
-      checkIn: lead.checkIn ?? undefined,
-      checkOut: lead.checkOut ?? undefined,
-      guests: lead.guests ?? undefined,
-      comment: lead.comment ?? undefined,
-      pageUrl: lead.pageUrl,
-      utm: lead.utm as UtmPayload | null,
-    });
-
     try {
-      await notifyTelegram(message);
+      await sendTelegramMessage(message);
     } catch (error) {
       console.error("Telegram notification failed", error);
     }
