@@ -14,10 +14,10 @@ const baseClasses =
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-primary-foreground shadow-[0_10px_20px_-12px_rgba(105,42,0,0.7)] hover:bg-primary/90",
+    "bg-accent text-accent-foreground shadow-[0_10px_20px_-12px_rgba(105,42,0,0.7)] hover:bg-accent/90 focus-visible:ring-gold/70",
   secondary:
-    "border border-header/50 bg-transparent text-header hover:border-header/70 hover:bg-card",
-  ghost: "text-header hover:bg-muted",
+    "border border-header/50 bg-transparent text-gold hover:border-header/70 hover:bg-card",
+  ghost: "text-gold hover:bg-muted/50",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

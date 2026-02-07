@@ -49,13 +49,17 @@ const galleryItems = Array.from({ length: 6 }, (_, index) => index);
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden py-20 sm:py-24">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(240,191,111,0.3),transparent_55%)]" />
-        <Container className="relative flex flex-col gap-12 py-8 sm:py-12">
+        <div className="b-shine absolute inset-0 opacity-60" />
+        <Container className="relative flex flex-col gap-12">
           <Badge>Hotel Bastion</Badge>
           <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
             <div className="space-y-6">
-              <h1>Комфортный отдых в Судаке, где все рядом</h1>
+              <h1>
+                Комфортный отдых в{" "}
+                <span className="text-gold">Судаке</span>, где все рядом
+              </h1>
               <p className="max-w-xl text-lg text-foreground/80">
                 Небольшой отель у моря с камерной атмосферой и вниманием к
                 деталям. Оставьте заявку — мы перезвоним и подберем лучший
@@ -80,7 +84,7 @@ export default function HomePage() {
                   (item) => (
                     <span
                       key={item}
-                      className="rounded-full border border-border bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-foreground/70"
+                      className="rounded-full border border-gold/50 bg-card px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-header"
                     >
                       {item}
                     </span>
@@ -92,7 +96,7 @@ export default function HomePage() {
               {["Море рядом", "Новый ремонт", "Тихий двор"].map((item) => (
                 <Card
                   key={item}
-                  className="flex min-h-[130px] flex-col justify-between bg-[#FFCD96]/50"
+                  className="flex min-h-[130px] flex-col justify-between bg-card/80"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs uppercase tracking-[0.3em] text-foreground/60">
@@ -120,7 +124,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section id="advantages">
+      <section id="advantages" className="py-20 sm:py-24">
         <Container className="flex flex-col gap-10">
           <SectionHeader
             eyebrow="Преимущества"
@@ -150,6 +154,7 @@ export default function HomePage() {
                     />
                   </svg>
                 </div>
+                <div className="b-divider mt-4" aria-hidden="true" />
                 <h3 className="mt-4 text-lg">{advantage.title}</h3>
                 <p className="mt-2 text-sm">{advantage.description}</p>
               </Card>
@@ -158,7 +163,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section id="rooms">
+      <section id="rooms" className="py-20 sm:py-24">
         <Container className="flex flex-col gap-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeader
@@ -179,6 +184,7 @@ export default function HomePage() {
                 <div className="h-36 w-full rounded-xl bg-gradient-to-br from-[#FFCD96] via-white to-[#F7D9A9]" />
                 <div className="flex flex-1 flex-col gap-3">
                   <div>
+                    <div className="b-divider mb-4" aria-hidden="true" />
                     <h3 className="text-lg">{room.name}</h3>
                     <p className="text-sm text-foreground/70">
                       {room.capacity}
@@ -195,7 +201,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section id="gallery">
+      <section id="gallery" className="py-20 sm:py-24">
         <Container className="flex flex-col gap-10">
           <SectionHeader
             eyebrow="Галерея"
@@ -206,21 +212,21 @@ export default function HomePage() {
             {galleryItems.map((item) => (
               <div
                 key={item}
-                className="h-44 rounded-2xl border border-border bg-gradient-to-br from-white via-[#FFF6E3] to-[#F7D9A9] shadow-[0_12px_30px_-24px_rgba(51,24,0,0.35)]"
+                className="b-surface h-44 bg-gradient-to-br from-white via-[#FFF6E3] to-[#F7D9A9]"
               />
             ))}
           </div>
         </Container>
       </section>
 
-      <section id="contacts">
+      <section id="contacts" className="py-20 sm:py-24">
         <Container className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <SectionHeader
             eyebrow="Контакты"
             title="Подскажем детали и поможем с маршрутом"
             subtitle="Свяжитесь с нами удобным способом — ответим в рабочее время."
           />
-          <Card className="space-y-4 bg-[#FFCD96]/40">
+          <Card className="space-y-4 bg-card/80">
             <div>
               <p className="text-sm uppercase tracking-[0.3em] text-foreground/60">
                 Телефон
@@ -246,9 +252,9 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section id="lead-form">
+      <section id="lead-form" className="py-20 sm:py-24">
         <Container>
-          <Card className="space-y-6 bg-[#FFF6E3]">
+          <Card className="space-y-6 bg-card/90">
             <SectionHeader
               eyebrow="Мы вам перезвоним"
               title="Оставьте заявку на подбор номера"
