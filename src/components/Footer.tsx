@@ -23,21 +23,15 @@ export function Footer() {
         </div>
         <div className="space-y-3">
           <p className="font-semibold text-stone-900">Навигация</p>
-          <a className="block text-stone-600 hover:text-stone-900" href="#rooms">
+          <Link className="block text-stone-600 hover:text-stone-900" href="/rooms">
             Номера
-          </a>
-          <a
-            className="block text-stone-600 hover:text-stone-900"
-            href="#reviews"
-          >
-            Отзывы
-          </a>
-          <a
-            className="block text-stone-600 hover:text-stone-900"
-            href="#location"
-          >
-            Локация
-          </a>
+          </Link>
+          <Link className="block text-stone-600 hover:text-stone-900" href="/prices">
+            Цены
+          </Link>
+          <Link className="block text-stone-600 hover:text-stone-900" href="/">
+            Главная
+          </Link>
         </div>
         <div className="space-y-3">
           <p className="font-semibold text-stone-900">Связаться</p>

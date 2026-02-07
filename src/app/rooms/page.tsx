@@ -65,6 +65,9 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
           <p className="text-body-large text-stone-600">
             Подберите вариант проживания и отправьте запрос на бронирование.
           </p>
+          <Link className="text-sm text-stone-600 hover:text-stone-900" href="/prices">
+            Сезонные цены →
+          </Link>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -108,25 +111,37 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
                         )
                       : null;
                   return (
-                    <RoomCard
+                    <Link
                       key={room.id}
-                      name={room.name}
-                      description={
-                        room.description ?? "Описание номера скоро появится."
-                      }
-                      price={`${selectedPrice ?? room.basePrice} ₽/ночь`}
-                      rating={4.8}
-                      amenities={room.amenities.slice(0, 3)}
-                      imageUrl={image?.url}
-                    />
+                      href={`/rooms/${room.slug}`}
+                      className="focus-ring block rounded-3xl"
+                    >
+                      <RoomCard
+                        name={room.name}
+                        description={
+                          room.description ?? "Описание номера скоро появится."
+                        }
+                        price={`${selectedPrice ?? room.basePrice} ₽/ночь`}
+                        rating={4.8}
+                        amenities={room.amenities.slice(0, 3)}
+                        imageUrl={image?.url}
+                        slug={room.slug}
+                        isLinkWrapped
+                      />
+                    </Link>
                   );
                 })}
           </div>
         </div>
 
-        <Link className="text-sm text-stone-600 hover:text-stone-900" href="/">
-          ← Вернуться на главную
-        </Link>
+        <div className="flex flex-wrap gap-4 text-sm text-stone-600">
+          <Link className="hover:text-stone-900" href="/prices">
+            Перейти к сезонным ценам →
+          </Link>
+          <Link className="hover:text-stone-900" href="/">
+            ← Вернуться на главную
+          </Link>
+        </div>
       </Container>
     </section>
   );
