@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { leadFormSchema } from "../../../features/lead-form/schema";
 import { normalizePhone } from "../../../features/lead-form/utils";
 import { prisma } from "../../../shared/lib/prisma";
+import { sendTelegramMessage } from "../../../shared/lib/telegram/sendTelegramMessage";
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 10;
@@ -101,6 +102,50 @@ const extractUtm = (rawUrl?: string | null): UtmPayload | null => {
   }
 };
 
+const escapeTelegramHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+
+const formatDate = (value: Date | null | undefined) =>
+  value ? value.toLocaleDateString("ru-RU") : "—";
+
+const formatGuests = (value: number | null | undefined) =>
+  typeof value === "number" ? String(value) : "—";
+
+const formatOptional = (value: string | null | undefined) =>
+  value && value.trim() ? escapeTelegramHtml(value.trim()) : "—";
+
+const buildLeadTelegramMessage = (payload: {
+  id: string;
+  name?: string | null;
+  phone: string;
+  checkIn?: Date | null;
+  checkOut?: Date | null;
+  guests?: number | null;
+  comment?: string | null;
+  source?: string | null;
+  pageUrl?: string | null;
+  userAgent?: string | null;
+}) => {
+  const lines = [
+    "<b>Новая заявка</b>",
+    `<b>ID:</b> ${escapeTelegramHtml(payload.id)}`,
+    `<b>Имя:</b> ${formatOptional(payload.name ?? undefined)}`,
+    `<b>Телефон:</b> ${escapeTelegramHtml(payload.phone)}`,
+    `<b>Заезд:</b> ${formatDate(payload.checkIn)}`,
+    `<b>Выезд:</b> ${formatDate(payload.checkOut)}`,
+    `<b>Гостей:</b> ${formatGuests(payload.guests)}`,
+    `<b>Комментарий:</b> ${formatOptional(payload.comment ?? undefined)}`,
+    `<b>Источник:</b> ${formatOptional(payload.source ?? undefined)}`,
+    `<b>Страница:</b> ${formatOptional(payload.pageUrl ?? undefined)}`,
+    `<b>User-Agent:</b> ${formatOptional(payload.userAgent ?? undefined)}`,
+  ];
+
+  return lines.join("\n");
+};
+
 export async function POST(request: Request) {
   let payload: unknown;
   const ip = getClientIp(request);
@@ -174,7 +219,24 @@ export async function POST(request: Request) {
       },
     });
 
-    // TODO: add Telegram notification after successful lead persistence.
+    try {
+      await sendTelegramMessage(
+        buildLeadTelegramMessage({
+          id: createdLead.id,
+          name: createdLead.name,
+          phone: createdLead.phone,
+          checkIn: createdLead.checkIn,
+          checkOut: createdLead.checkOut,
+          guests: createdLead.guests,
+          comment: createdLead.comment,
+          source: createdLead.source,
+          pageUrl: createdLead.pageUrl,
+          userAgent: createdLead.userAgent,
+        })
+      );
+    } catch (error) {
+      console.error("Failed to send Telegram lead notification", { ip, error });
+    }
 
     return Response.json({ ok: true, id: createdLead.id });
   } catch (error) {
