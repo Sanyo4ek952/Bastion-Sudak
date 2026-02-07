@@ -1,5 +1,21 @@
 # Bastion-Sudak
 
+## Overview
+
+Bastion-Sudak is a modern hotel booking website for the “Bastion” resort hotel in Sudak. It provides a customer-facing experience for selecting dates and rooms, plus an admin area for managing inventory and pricing.
+
+Key features include:
+- Home page with date search and filters.
+- Rooms catalog (`/rooms`) with cards, dynamic pricing, and filters.
+- Room detail page (`/rooms/[slug]`) with photo gallery, description, amenities, seasonal price table, and a booking form.
+- Prices page (`/prices`) with base rates and upcoming seasonal rules.
+- Booking form that sends requests via `POST /api/booking-requests` and calculates price via `GET /api/quote`.
+- Admin section (`/admin`) for managing rooms, seasonal rates, and booking requests, protected by basic auth credentials from `.env`.
+
+Core technologies: Next.js (App Router), React, TypeScript, Tailwind CSS, Prisma with PostgreSQL, a modular UI kit (Button, Container, Card), and design tokens in `globals.css`.
+
+The design system follows the Figma layout used for this project.
+
 ## Setup
 
 ```bash
