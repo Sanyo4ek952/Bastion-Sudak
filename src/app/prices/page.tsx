@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 import { prisma } from "../../shared/lib/prisma";
@@ -47,6 +48,14 @@ export default async function PricesPage() {
         <p className="text-base text-slate-600">
           Итоговая стоимость зависит от выбранных дат и сезонных коэффициентов.
         </p>
+        <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+          <Link className="hover:text-slate-900" href="/rooms">
+            ← Вернуться к номерам
+          </Link>
+          <Link className="hover:text-slate-900" href="/">
+            ← На главную
+          </Link>
+        </div>
       </header>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -57,7 +66,12 @@ export default async function PricesPage() {
               key={room.id}
               className="flex flex-col gap-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between"
             >
-              <span className="font-medium text-slate-900">{room.name}</span>
+              <Link
+                className="font-medium text-slate-900 hover:underline"
+                href={`/rooms/${room.slug}`}
+              >
+                {room.name}
+              </Link>
               <span>от {room.basePrice} ₽/ночь</span>
             </div>
           ))}
@@ -100,7 +114,12 @@ export default async function PricesPage() {
                   return (
                     <tr key={rate.id}>
                       <td className="py-3 pr-4 font-medium text-slate-900">
-                        {rate.room.name}
+                        <Link
+                          className="hover:underline"
+                          href={`/rooms/${rate.room.slug}`}
+                        >
+                          {rate.room.name}
+                        </Link>
                       </td>
                       <td className="py-3 pr-4">
                         {formatDate(rate.startDate)} – {formatDate(rate.endDate)}

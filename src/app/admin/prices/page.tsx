@@ -63,6 +63,12 @@ export default async function AdminPricesPage() {
               <h2 className="text-lg font-semibold text-slate-900">
                 {room.name}
               </h2>
+              <Link
+                className="text-sm text-slate-500 hover:text-slate-900"
+                href={`/rooms/${room.slug}`}
+              >
+                Открыть на сайте →
+              </Link>
               <p className="text-sm text-slate-600">
                 Базовая цена: {room.basePrice} ₽/ночь
               </p>

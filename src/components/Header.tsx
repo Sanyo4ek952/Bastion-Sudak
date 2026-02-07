@@ -4,7 +4,10 @@ import { buttonVariants } from "../shared/ui/Button";
 import { Container } from "../shared/ui/Container";
 
 const navItems = [
-  { label: "Номера", href: "#rooms" },
+  { label: "Номера", href: "/rooms" },
+  { label: "Цены", href: "/prices" },
+  { label: "Главная", href: "/" },
+  { label: "Номера на главной", href: "#rooms" },
   { label: "Отзывы", href: "#reviews" },
   { label: "Локация", href: "#location" }
 ];
@@ -20,15 +23,25 @@ export function Header() {
           Bastion
         </Link>
         <nav className="hidden items-center gap-6 text-sm md:flex">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-stone-600 transition duration-150 hover:text-stone-900 focus-ring"
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) =>
+            item.href.startsWith("#") ? (
+              <a
+                key={item.href}
+                href={item.href}
+                className="text-stone-600 transition duration-150 hover:text-stone-900 focus-ring"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-stone-600 transition duration-150 hover:text-stone-900 focus-ring"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </nav>
         <div className="flex items-center gap-3">
           <a
