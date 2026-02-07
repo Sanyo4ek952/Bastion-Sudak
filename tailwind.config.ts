@@ -11,11 +11,15 @@ const config: Config = {
         card: "hsl(var(--card))",
         border: "hsl(var(--border))",
         accent: "hsl(var(--accent))",
-        "accent-foreground": "hsl(var(--accent-foreground))"
+        "accent-foreground": "hsl(var(--accent-foreground))",
+        primary: "hsl(var(--primary))",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+        header: "hsl(var(--header))",
+        gold: "hsl(var(--gold))"
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-playfair)", "serif"]
+        sans: ["Arial", "system-ui", "sans-serif"],
+        display: ["\"Century Gothic\"", "\"Trebuchet MS\"", "Arial", "sans-serif"]
       }
     }
   },
