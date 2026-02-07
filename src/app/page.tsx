@@ -41,6 +41,12 @@ export default function HomePage() {
         </div>
         <LeadForm />
       </section>
+
+      <div className="text-xs text-slate-400">
+        <a className="hover:text-slate-600" href="/admin/leads">
+          Admin
+        </a>
+      </div>
     </main>
   );
 }
