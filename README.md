@@ -6,7 +6,7 @@
 pnpm install
 ```
 
-Create a `.env` file using `.env.example` and update the values for your local setup.
+Create a `.env.local` (or `.env`) file using `.env.example` and update the values for your local setup.
 
 ```bash
 cp .env.example .env
@@ -27,16 +27,16 @@ ADMIN_BASIC_PASS="change-me"
 docker run --name bastion-postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=bastion_sudak -p 5432:5432 -d postgres:16
 ```
 
-2. Set `DATABASE_URL` in `.env`:
+2. Set `DATABASE_URL` in `.env.local` (or `.env`) so it points to a running Postgres instance:
 
 ```
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/bastion_sudak?schema=public"
 ```
 
-3. Run Prisma migrations:
+3. Run Prisma migrations (creates tables if not yet created):
 
 ```bash
-pnpm prisma:migrate
+pnpm prisma:migrate dev --name init
 ```
 
 4. Seed demo data (rooms + seasonal rates):
@@ -47,7 +47,11 @@ pnpm prisma:seed
 
 ## Development
 
+Ensure Postgres is running and migrations are applied before starting the dev server:
+
 ```bash
+pnpm install
+pnpm prisma:migrate dev --name init
 pnpm dev
 ```
 
