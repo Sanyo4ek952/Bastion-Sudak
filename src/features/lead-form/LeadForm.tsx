@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { leadFormSchema } from "./schema";
 import type { LeadFormValues } from "./types";
 import { normalizePhone } from "./utils";
+import { Button } from "../../shared/ui/Button";
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
@@ -24,6 +25,9 @@ const defaultValues: LeadFormValues = {
 export function LeadForm() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const baseInputClasses =
+    "h-11 w-full rounded-xl border border-border bg-white px-3 text-base text-foreground shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30";
 
   const {
     register,
@@ -82,63 +86,87 @@ export function LeadForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <label
-          className="hidden"
-          aria-hidden="true"
-        >
-          Website
+        <div className="sr-only" aria-hidden="true">
+          <label htmlFor="lead-website">Website</label>
           <input
+            id="lead-website"
             type="text"
             tabIndex={-1}
             autoComplete="off"
             {...register("website")}
           />
-        </label>
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Имя
+        </div>
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+          <label htmlFor="lead-name">Имя</label>
           <input
+            id="lead-name"
             type="text"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            aria-invalid={Boolean(errors.name)}
+            className={[
+              baseInputClasses,
+              errors.name ? "border-rose-400 focus-visible:ring-rose-200" : "",
+            ].join(" ")}
             placeholder="Анна"
             {...register("name")}
           />
           {errors.name ? (
             <span className="text-xs text-rose-600">{errors.name.message}</span>
           ) : null}
-        </label>
+        </div>
 
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Телефон *
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+          <label htmlFor="lead-phone">Телефон *</label>
           <input
+            id="lead-phone"
             type="tel"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            aria-invalid={Boolean(errors.phone)}
+            className={[
+              baseInputClasses,
+              errors.phone ? "border-rose-400 focus-visible:ring-rose-200" : "",
+            ].join(" ")}
             placeholder="+7 (900) 000-00-00"
             {...register("phone")}
           />
           {errors.phone ? (
             <span className="text-xs text-rose-600">{errors.phone.message}</span>
           ) : null}
-        </label>
+        </div>
 
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Дата заезда
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+          <label htmlFor="lead-checkin">Дата заезда</label>
           <input
+            id="lead-checkin"
             type="date"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            aria-invalid={Boolean(errors.checkIn)}
+            className={[
+              baseInputClasses,
+              errors.checkIn
+                ? "border-rose-400 focus-visible:ring-rose-200"
+                : "",
+            ].join(" ")}
             {...register("checkIn", {
               setValueAs: (value) => (value === "" ? undefined : value),
             })}
           />
           {errors.checkIn ? (
-            <span className="text-xs text-rose-600">{errors.checkIn.message}</span>
+            <span className="text-xs text-rose-600">
+              {errors.checkIn.message}
+            </span>
           ) : null}
-        </label>
+        </div>
 
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Дата выезда
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+          <label htmlFor="lead-checkout">Дата выезда</label>
           <input
+            id="lead-checkout"
             type="date"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            aria-invalid={Boolean(errors.checkOut)}
+            className={[
+              baseInputClasses,
+              errors.checkOut
+                ? "border-rose-400 focus-visible:ring-rose-200"
+                : "",
+            ].join(" ")}
             {...register("checkOut", {
               setValueAs: (value) => (value === "" ? undefined : value),
             })}
@@ -148,15 +176,20 @@ export function LeadForm() {
               {errors.checkOut.message}
             </span>
           ) : null}
-        </label>
+        </div>
 
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Гостей
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+          <label htmlFor="lead-guests">Гостей</label>
           <input
+            id="lead-guests"
             type="number"
             min={1}
             max={10}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+            aria-invalid={Boolean(errors.guests)}
+            className={[
+              baseInputClasses,
+              errors.guests ? "border-rose-400 focus-visible:ring-rose-200" : "",
+            ].join(" ")}
             {...register("guests", {
               setValueAs: (value) => (value === "" ? undefined : Number(value)),
             })}
@@ -164,60 +197,66 @@ export function LeadForm() {
           {errors.guests ? (
             <span className="text-xs text-rose-600">{errors.guests.message}</span>
           ) : null}
-        </label>
+        </div>
       </div>
 
-      <label className="flex flex-col gap-2 text-sm text-slate-700">
-        Комментарий
+      <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <label htmlFor="lead-comment">Комментарий</label>
         <textarea
+          id="lead-comment"
           rows={4}
-          className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
+          aria-invalid={Boolean(errors.comment)}
+          className={[
+            "min-h-[120px] w-full rounded-xl border bg-white px-3 py-2 text-base text-foreground shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
+            errors.comment ? "border-rose-400 focus-visible:ring-rose-200" : "",
+          ].join(" ")}
           placeholder="Например, нужен номер с видом на море"
           {...register("comment")}
         />
         {errors.comment ? (
           <span className="text-xs text-rose-600">{errors.comment.message}</span>
         ) : null}
-      </label>
+      </div>
 
-      <label className="flex items-start gap-2 text-sm text-slate-700">
+      <div className="flex items-start gap-3 text-sm text-foreground/80">
         <input
+          id="lead-consent"
           type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-slate-300"
+          className="mt-1 h-4 w-4 rounded border-border text-accent focus-visible:ring-2 focus-visible:ring-accent/40"
           {...register("consent")}
         />
-        <span>
+        <label htmlFor="lead-consent">
           Я согласен(а) на обработку персональных данных и получение обратного
           звонка
-        </span>
-      </label>
+        </label>
+      </div>
       {errors.consent ? (
         <span className="text-xs text-rose-600">{errors.consent.message}</span>
       ) : null}
 
       {submitError ? (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/80 px-4 py-3 text-sm text-rose-700">
           {submitError}
         </div>
       ) : null}
 
       {status === "success" ? (
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-700">
           Спасибо! Мы свяжемся с вами в ближайшее время.
         </div>
       ) : null}
 
-      <button
+      <Button
         type="submit"
-        className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
         disabled={status === "loading" || isSubmitting}
+        size="lg"
       >
         {status === "loading" || isSubmitting
           ? "Отправляем..."
           : status === "success"
             ? "Заявка отправлена"
             : "Оставить заявку"}
-      </button>
+      </Button>
     </form>
   );
 }
