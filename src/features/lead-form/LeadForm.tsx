@@ -27,7 +27,7 @@ export function LeadForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const baseInputClasses =
-    "h-11 w-full rounded-xl border border-border bg-white/80 px-3 text-base text-foreground shadow-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70";
+    "h-11 w-full rounded-xl border border-border bg-card px-3 text-base text-foreground shadow-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60";
 
   const {
     register,
@@ -96,7 +96,7 @@ export function LeadForm() {
             {...register("website")}
           />
         </div>
-        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
           <label htmlFor="lead-name">Имя</label>
           <input
             id="lead-name"
@@ -114,7 +114,7 @@ export function LeadForm() {
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
           <label htmlFor="lead-phone">Телефон *</label>
           <input
             id="lead-phone"
@@ -132,7 +132,7 @@ export function LeadForm() {
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
           <label htmlFor="lead-checkin">Дата заезда</label>
           <input
             id="lead-checkin"
@@ -155,7 +155,7 @@ export function LeadForm() {
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
           <label htmlFor="lead-checkout">Дата выезда</label>
           <input
             id="lead-checkout"
@@ -178,7 +178,7 @@ export function LeadForm() {
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+        <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
           <label htmlFor="lead-guests">Гостей</label>
           <input
             id="lead-guests"
@@ -200,14 +200,14 @@ export function LeadForm() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 text-sm font-medium text-foreground/80">
+      <div className="flex flex-col gap-2 text-sm font-medium text-foreground/70">
         <label htmlFor="lead-comment">Комментарий</label>
         <textarea
           id="lead-comment"
           rows={4}
           aria-invalid={Boolean(errors.comment)}
           className={[
-            "min-h-[120px] w-full rounded-xl border bg-white/80 px-3 py-2 text-base text-foreground shadow-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70",
+            "min-h-[120px] w-full rounded-xl border border-border bg-card px-3 py-2 text-base text-foreground shadow-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60",
             errors.comment ? "border-rose-400 focus-visible:ring-rose-200" : "",
           ].join(" ")}
           placeholder="Например, нужен номер с видом на море"
@@ -222,7 +222,7 @@ export function LeadForm() {
         <input
           id="lead-consent"
           type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-border text-header focus-visible:ring-2 focus-visible:ring-gold/70"
+          className="mt-1 h-4 w-4 rounded border-border accent-header focus-visible:ring-2 focus-visible:ring-gold/60"
           {...register("consent")}
         />
         <label htmlFor="lead-consent">
