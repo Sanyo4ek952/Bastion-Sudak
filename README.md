@@ -12,6 +12,13 @@ Create a `.env` file using `.env.example` and update the values for your local s
 cp .env.example .env
 ```
 
+Set admin basic auth credentials for protected `/admin/*` routes:
+
+```
+ADMIN_BASIC_USER="admin"
+ADMIN_BASIC_PASS="change-me"
+```
+
 ### Postgres + Prisma
 
 1. Start a local Postgres instance (for example, via Docker):
