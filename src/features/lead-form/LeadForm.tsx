@@ -13,6 +13,7 @@ type SubmitStatus = "idle" | "loading" | "success" | "error";
 const defaultValues: LeadFormValues = {
   name: "",
   phone: "",
+  website: "",
   checkIn: undefined,
   checkOut: undefined,
   guests: undefined,
@@ -81,6 +82,18 @@ export function LeadForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="grid gap-4 md:grid-cols-2">
+        <label
+          className="hidden"
+          aria-hidden="true"
+        >
+          Website
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            {...register("website")}
+          />
+        </label>
         <label className="flex flex-col gap-2 text-sm text-slate-700">
           Имя
           <input
