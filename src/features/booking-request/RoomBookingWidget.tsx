@@ -64,6 +64,7 @@ export function RoomBookingWidget({
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [board, setBoard] = useState<BoardType>("RO");
+  const [occupancy, setOccupancy] = useState<"DBL" | "SNGL" | "TRPL">("DBL");
 
   const {
     register,
@@ -83,6 +84,10 @@ export function RoomBookingWidget({
     name: ["checkIn", "checkOut", "guests"]
   });
 
+  const inferredOccupancy = getOccupancyByGuests(
+    typeof guestsValue === "number" ? guestsValue : undefined
+  );
+
   const localQuote = useMemo<LocalQuote | null>(() => {
     const checkIn = parseDate(checkInValue);
     const checkOut = parseDate(checkOutValue);
@@ -99,13 +104,16 @@ export function RoomBookingWidget({
     if (!config) {
       return null;
     }
-    const occupancy = getOccupancyByGuests(
-      typeof guestsValue === "number" ? guestsValue : undefined
-    );
+    const occupancyMap = {
+      DBL: "dbl",
+      SNGL: "sngl",
+      TRPL: "trpl"
+    } as const;
+    const normalizedOccupancy = occupancyMap[occupancy];
     const pricePerNight = getPriceForDateRange(
       config.roomType,
       config.variant,
-      occupancy,
+      normalizedOccupancy,
       checkIn,
       checkOut,
       board
@@ -118,7 +126,7 @@ export function RoomBookingWidget({
       pricePerNight,
       total: pricePerNight * nights
     };
-  }, [board, checkInValue, checkOutValue, guestsValue, roomSlug]);
+  }, [board, checkInValue, checkOutValue, occupancy, roomSlug]);
 
   const handleQuote = async () => {
     setQuoteError(null);
@@ -137,7 +145,9 @@ export function RoomBookingWidget({
       const params = new URLSearchParams({
         roomId,
         checkIn: current.checkIn,
-        checkOut: current.checkOut
+        checkOut: current.checkOut,
+        board,
+        occupancy
       });
       const response = await fetch(`/api/quote?${params.toString()}`);
       const data = await response.json();
@@ -250,6 +260,25 @@ export function RoomBookingWidget({
               <option value="HB">HB — {boardDescriptions.HB}</option>
             </select>
           </label>
+          <label className="flex flex-col gap-2 text-sm text-stone-600">
+            Тип размещения
+            <select
+              value={occupancy}
+              onChange={(event) =>
+                setOccupancy(event.target.value as "DBL" | "SNGL" | "TRPL")
+              }
+              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
+            >
+              <option value="DBL">DBL — 2 гостя</option>
+              <option value="SNGL">SNGL — 1 гость</option>
+              <option value="TRPL">TRPL — 3 гостя</option>
+            </select>
+            {inferredOccupancy ? (
+              <span className="text-xs text-stone-400">
+                По гостям: {inferredOccupancy.toUpperCase()}
+              </span>
+            ) : null}
+          </label>
         </div>
 
         {localQuote ? (
@@ -264,7 +293,7 @@ export function RoomBookingWidget({
           </div>
         ) : (
           <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-500">
-            Выберите даты и план питания, чтобы увидеть стоимость.
+            Выберите даты, план питания и тип размещения, чтобы увидеть стоимость.
           </div>
         )}
 

@@ -7,11 +7,31 @@ import { prisma } from "../../../shared/lib/prisma";
 export const dynamic = "force-dynamic";
 
 const formatDateInput = (value: Date) => value.toISOString().slice(0, 10);
+const formatDateRange = (start: Date, end: Date) =>
+  `${formatDateInput(start).split("-").reverse().join(".")}–${formatDateInput(end)
+    .split("-")
+    .reverse()
+    .join(".")}`;
+
+const occupancyOrder = ["DBL", "SNGL", "TRPL"] as const;
+const getVariantsForForm = (
+  variants: Array<{ occupancy: string; price: number }>,
+  fallback: number
+) =>
+  occupancyOrder.map((occupancy) => {
+    const match = variants.find((variant) => variant.occupancy === occupancy);
+    return { occupancy, price: match?.price ?? fallback };
+  });
 
 export default async function AdminPricesPage() {
   const rooms = await prisma.room.findMany({
     orderBy: { createdAt: "desc" },
-    include: { rates: { orderBy: { startDate: "asc" } } }
+    include: {
+      rates: {
+        orderBy: { startDate: "asc" },
+        include: { variants: { orderBy: { occupancy: "asc" } } }
+      }
+    }
   });
 
   return (
@@ -54,7 +74,8 @@ export default async function AdminPricesPage() {
                 roomId={room.id}
                 startDate=""
                 endDate=""
-                pricePerNight={room.basePrice}
+                board="RO"
+                prices={getVariantsForForm([], room.basePrice)}
               />
             </div>
 
@@ -69,13 +90,29 @@ export default async function AdminPricesPage() {
                     key={rate.id}
                     className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
                   >
+                    <p className="text-xs text-slate-500">
+                      {room.name} — {formatDateRange(rate.startDate, rate.endDate)} —{" "}
+                      {rate.board} —{" "}
+                      {occupancyOrder
+                        .map((occupancy) => {
+                          const price =
+                            rate.variants.find(
+                              (variant) => variant.occupancy === occupancy
+                            )?.price ?? null;
+                          return `${occupancy}: ${
+                            price && price > 0 ? `${price} ₽` : "—"
+                          }`;
+                        })
+                        .join(", ")}
+                    </p>
                     <SeasonalRateForm
                       mode="edit"
                       roomId={room.id}
                       rateId={rate.id}
                       startDate={formatDateInput(rate.startDate)}
                       endDate={formatDateInput(rate.endDate)}
-                      pricePerNight={rate.pricePerNight}
+                      board={rate.board}
+                      prices={getVariantsForForm(rate.variants, room.basePrice)}
                     />
                     <div className="mt-2">
                       <SeasonalRateDeleteButton id={rate.id} />

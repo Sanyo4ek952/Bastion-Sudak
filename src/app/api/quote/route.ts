@@ -1,12 +1,5 @@
-import { z } from "zod";
-
 import { buildQuote } from "../../../shared/lib/pricing/quote";
-
-const querySchema = z.object({
-  roomId: z.string().min(1),
-  checkIn: z.string().min(1),
-  checkOut: z.string().min(1)
-});
+import { parseQuoteSearchParams } from "./quoteSchema";
 
 const parseDate = (value: string) => {
   const parsed = new Date(value);
@@ -18,11 +11,7 @@ const parseDate = (value: string) => {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const parsed = querySchema.safeParse({
-    roomId: url.searchParams.get("roomId") ?? "",
-    checkIn: url.searchParams.get("checkIn") ?? "",
-    checkOut: url.searchParams.get("checkOut") ?? ""
-  });
+  const parsed = parseQuoteSearchParams(url);
 
   if (!parsed.success) {
     return Response.json(
@@ -45,7 +34,9 @@ export async function GET(request: Request) {
     const quote = await buildQuote({
       roomId: parsed.data.roomId,
       checkIn,
-      checkOut
+      checkOut,
+      board: parsed.data.board,
+      occupancy: parsed.data.occupancy
     });
     return Response.json({ ok: true, ...quote });
   } catch (error) {

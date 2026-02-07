@@ -63,13 +63,23 @@ const seedRates = [
     slug: "standard-sea-view",
     startDate: new Date("2024-07-01"),
     endDate: new Date("2024-08-31"),
-    pricePerNight: 5200
+    board: "BB",
+    variants: [
+      { occupancy: "DBL", price: 5200 },
+      { occupancy: "SNGL", price: 4700 },
+      { occupancy: "TRPL", price: 0 }
+    ]
   },
   {
     slug: "family-room",
     startDate: new Date("2024-07-15"),
     endDate: new Date("2024-08-20"),
-    pricePerNight: 6900
+    board: "HB",
+    variants: [
+      { occupancy: "DBL", price: 6900 },
+      { occupancy: "SNGL", price: 6400 },
+      { occupancy: "TRPL", price: 7900 }
+    ]
   }
 ];
 
@@ -105,7 +115,15 @@ const main = async () => {
           roomId: created.id,
           startDate: rate.startDate,
           endDate: rate.endDate,
-          pricePerNight: rate.pricePerNight
+          board: rate.board,
+          variants: {
+            createMany: {
+              data: rate.variants.map((variant) => ({
+                occupancy: variant.occupancy,
+                price: variant.price
+              }))
+            }
+          }
         }
       });
     }
