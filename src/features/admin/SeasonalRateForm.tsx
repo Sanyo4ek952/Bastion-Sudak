@@ -9,7 +9,8 @@ type RateFormProps = {
   rateId?: string;
   startDate: string;
   endDate: string;
-  pricePerNight: number;
+  board: "RO" | "BB" | "HB";
+  prices: Array<{ occupancy: "DBL" | "SNGL" | "TRPL"; price: number }>;
   onSuccess?: () => void;
 };
 
@@ -19,26 +20,47 @@ export function SeasonalRateForm({
   rateId,
   startDate,
   endDate,
-  pricePerNight,
+  board,
+  prices,
   onSuccess
 }: RateFormProps) {
   const router = useRouter();
   const [start, setStart] = useState(startDate);
   const [end, setEnd] = useState(endDate);
-  const [price, setPrice] = useState(pricePerNight);
+  const [selectedBoard, setSelectedBoard] = useState<"RO" | "BB" | "HB">(board);
+  const [priceVariants, setPriceVariants] = useState(prices);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const updatePrice = (occupancy: "DBL" | "SNGL" | "TRPL", value: number) => {
+    setPriceVariants((prev) =>
+      prev.map((variant) =>
+        variant.occupancy === occupancy ? { ...variant, price: value } : variant
+      )
+    );
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSaving(true);
     setError(null);
 
+    const invalidPrice = priceVariants.some((variant) => variant.price < 0);
+    if (invalidPrice) {
+      setIsSaving(false);
+      setError("Цена должна быть не меньше 0");
+      return;
+    }
+
     const payload = {
       roomId,
       startDate: start,
       endDate: end,
-      pricePerNight: Number(price)
+      board: selectedBoard,
+      variants: priceVariants.map((variant) => ({
+        occupancy: variant.occupancy,
+        price: Number(variant.price)
+      }))
     };
 
     const endpoint =
@@ -60,7 +82,12 @@ export function SeasonalRateForm({
         if (mode === "create") {
           setStart("");
           setEnd("");
-          setPrice(0);
+          setSelectedBoard("RO");
+          setPriceVariants([
+            { occupancy: "DBL", price: 0 },
+            { occupancy: "SNGL", price: 0 },
+            { occupancy: "TRPL", price: 0 }
+          ]);
         }
       }
     } catch (error) {
@@ -72,7 +99,7 @@ export function SeasonalRateForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-sm text-slate-700">
           Начало
           <input
@@ -94,16 +121,39 @@ export function SeasonalRateForm({
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-slate-700">
-          Цена/ночь
-          <input
-            type="number"
-            min={0}
+          План питания
+          <select
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            value={price}
-            onChange={(event) => setPrice(Number(event.target.value))}
-            required
-          />
+            value={selectedBoard}
+            onChange={(event) =>
+              setSelectedBoard(event.target.value as "RO" | "BB" | "HB")
+            }
+          >
+            <option value="RO">RO</option>
+            <option value="BB">BB</option>
+            <option value="HB">HB</option>
+          </select>
         </label>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {priceVariants.map((variant) => (
+          <label
+            key={variant.occupancy}
+            className="flex flex-col gap-1 text-sm text-slate-700"
+          >
+            {variant.occupancy}
+            <input
+              type="number"
+              min={0}
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              value={variant.price}
+              onChange={(event) =>
+                updatePrice(variant.occupancy, Number(event.target.value))
+              }
+              required
+            />
+          </label>
+        ))}
       </div>
       {error ? (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">

@@ -17,7 +17,11 @@ export const buildQuote = async (params: {
   roomId: string;
   checkIn: Date;
   checkOut: Date;
+  board?: "RO" | "BB" | "HB";
+  occupancy?: "DBL" | "SNGL" | "TRPL";
 }): Promise<QuoteResult> => {
+  const board = params.board ?? "RO";
+  const occupancy = params.occupancy ?? "DBL";
   const room = await prisma.room.findUnique({
     where: { id: params.roomId },
     select: {
@@ -25,9 +29,11 @@ export const buildQuote = async (params: {
       rates: {
         where: {
           endDate: { gte: params.checkIn },
-          startDate: { lte: params.checkOut }
+          startDate: { lte: params.checkOut },
+          board
         },
-        orderBy: { startDate: "asc" }
+        orderBy: { startDate: "asc" },
+        include: { variants: true }
       }
     }
   });
@@ -52,7 +58,10 @@ export const buildQuote = async (params: {
     const match = room.rates.find(
       (rate) => date >= startOfDay(rate.startDate) && date <= startOfDay(rate.endDate)
     );
-    const price = match?.pricePerNight ?? room.basePrice;
+    const variantPrice = match?.variants.find(
+      (variant) => variant.occupancy === occupancy
+    )?.price;
+    const price = variantPrice && variantPrice > 0 ? variantPrice : room.basePrice;
     nightly.push({ date: date.toISOString().slice(0, 10), price });
     total += price;
   }

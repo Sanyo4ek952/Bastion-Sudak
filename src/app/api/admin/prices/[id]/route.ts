@@ -2,11 +2,23 @@ import { z } from "zod";
 
 import { prisma } from "../../../../../shared/lib/prisma";
 
+const variantSchema = z.object({
+  occupancy: z.enum(["DBL", "SNGL", "TRPL"]),
+  price: z.number().int().min(0)
+});
+
 const payloadSchema = z.object({
   roomId: z.string().min(1),
   startDate: z.string().min(1),
   endDate: z.string().min(1),
-  pricePerNight: z.number().int().min(0)
+  board: z.enum(["RO", "BB", "HB"]),
+  variants: z
+    .array(variantSchema)
+    .min(1)
+    .refine(
+      (items) => new Set(items.map((item) => item.occupancy)).size === items.length,
+      { message: "Повторяющиеся типы размещения" }
+    )
 });
 
 const parseDate = (value: string) => {
@@ -64,6 +76,7 @@ export async function PUT(
     where: {
       roomId: result.data.roomId,
       id: { not: params.id },
+      board: result.data.board,
       startDate: { lte: endDate },
       endDate: { gte: startDate }
     }
@@ -77,14 +90,30 @@ export async function PUT(
   }
 
   try {
-    const updated = await prisma.seasonalRate.update({
-      where: { id: params.id },
-      data: {
-        roomId: result.data.roomId,
-        startDate,
-        endDate,
-        pricePerNight: result.data.pricePerNight
-      }
+    const updated = await prisma.$transaction(async (tx) => {
+      const rate = await tx.seasonalRate.update({
+        where: { id: params.id },
+        data: {
+          roomId: result.data.roomId,
+          startDate,
+          endDate,
+          board: result.data.board
+        }
+      });
+
+      await tx.seasonalRateVariant.deleteMany({
+        where: { seasonalRateId: params.id }
+      });
+
+      await tx.seasonalRateVariant.createMany({
+        data: result.data.variants.map((variant) => ({
+          seasonalRateId: params.id,
+          occupancy: variant.occupancy,
+          price: variant.price
+        }))
+      });
+
+      return rate;
     });
     return Response.json({ ok: true, id: updated.id });
   } catch (error) {

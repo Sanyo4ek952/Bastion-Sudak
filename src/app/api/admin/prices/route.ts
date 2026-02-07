@@ -2,11 +2,23 @@ import { z } from "zod";
 
 import { prisma } from "../../../../shared/lib/prisma";
 
+const variantSchema = z.object({
+  occupancy: z.enum(["DBL", "SNGL", "TRPL"]),
+  price: z.number().int().min(0)
+});
+
 const payloadSchema = z.object({
   roomId: z.string().min(1),
   startDate: z.string().min(1),
   endDate: z.string().min(1),
-  pricePerNight: z.number().int().min(0)
+  board: z.enum(["RO", "BB", "HB"]),
+  variants: z
+    .array(variantSchema)
+    .min(1)
+    .refine(
+      (items) => new Set(items.map((item) => item.occupancy)).size === items.length,
+      { message: "Повторяющиеся типы размещения" }
+    )
 });
 
 const parseDate = (value: string) => {
@@ -60,6 +72,7 @@ export async function POST(request: Request) {
   const overlap = await prisma.seasonalRate.findFirst({
     where: {
       roomId: result.data.roomId,
+      board: result.data.board,
       startDate: { lte: endDate },
       endDate: { gte: startDate }
     }
@@ -78,7 +91,15 @@ export async function POST(request: Request) {
         roomId: result.data.roomId,
         startDate,
         endDate,
-        pricePerNight: result.data.pricePerNight
+        board: result.data.board,
+        variants: {
+          createMany: {
+            data: result.data.variants.map((variant) => ({
+              occupancy: variant.occupancy,
+              price: variant.price
+            }))
+          }
+        }
       }
     });
     return Response.json({ ok: true, id: created.id });

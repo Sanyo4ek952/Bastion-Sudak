@@ -7,7 +7,8 @@ import type { BoardType } from "../../data/rooms";
 import { getPriceForDateRange } from "../../shared/lib/pricing/getPriceForDateRange";
 import {
   getOccupancyByGuests,
-  getRoomConfigBySlug
+  getRoomConfigBySlug,
+  normalizeOccupancyParam
 } from "../../shared/lib/pricing/roomPricing";
 import { Container } from "../../shared/ui/Container";
 import { prisma } from "../../shared/lib/prisma";
@@ -25,6 +26,7 @@ type RoomsPageProps = {
     checkOut?: string;
     guests?: string;
     board?: BoardType;
+    occupancy?: "DBL" | "SNGL" | "TRPL";
   };
 };
 
@@ -43,7 +45,8 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
   const checkIn = parseDate(searchParams?.checkIn);
   const checkOut = parseDate(searchParams?.checkOut);
   const guests = searchParams?.guests ? Number(searchParams.guests) : undefined;
-  const occupancy = getOccupancyByGuests(guests);
+  const occupancy =
+    normalizeOccupancyParam(searchParams?.occupancy) ?? getOccupancyByGuests(guests);
   const board = searchParams?.board;
   const rooms = await prisma.room.findMany({
     where: { isActive: true },

@@ -20,6 +20,17 @@ export const getOccupancyByGuests = (guests?: number) => {
   return "trpl" as const;
 };
 
+export const normalizeOccupancyParam = (value?: string) => {
+  if (!value) {
+    return undefined;
+  }
+  const lowered = value.toLowerCase();
+  if (lowered === "dbl" || lowered === "sngl" || lowered === "trpl") {
+    return lowered;
+  }
+  return undefined;
+};
+
 export const boardDescriptions: Record<BoardType, string> = {
   RO: "без питания",
   BB: "только завтрак",

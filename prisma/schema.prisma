@@ -29,6 +29,18 @@ model Room {
   requests    BookingRequest[]
 }
 
+enum MealPlan {
+  RO
+  BB
+  HB
+}
+
+enum Occupancy {
+  DBL
+  SNGL
+  TRPL
+}
+
 model RoomImage {
   id        String @id @default(cuid())
   roomId    String
@@ -41,15 +53,27 @@ model RoomImage {
 }
 
 model SeasonalRate {
-  id            String   @id @default(cuid())
-  roomId        String
-  startDate     DateTime
-  endDate       DateTime
-  pricePerNight Int
-  createdAt     DateTime @default(now())
-  room          Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  roomId    String
+  startDate DateTime
+  endDate   DateTime
+  board     MealPlan
+  variants  SeasonalRateVariant[]
+  createdAt DateTime    @default(now())
+  room      Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId, startDate, endDate])
+}
+
+model SeasonalRateVariant {
+  id             String      @id @default(cuid())
+  seasonalRateId String
+  occupancy      Occupancy
+  price          Int
+  seasonalRate   SeasonalRate @relation(fields: [seasonalRateId], references: [id], onDelete: Cascade)
+
+  @@index([seasonalRateId])
+  @@unique([seasonalRateId, occupancy])
 }
 
 model BookingRequest {

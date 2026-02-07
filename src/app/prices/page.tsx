@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { prisma } from "../../shared/lib/prisma";
+import { boardDescriptions } from "../../shared/lib/pricing/roomPricing";
 
 export const metadata: Metadata = {
   title: "Цены | Hotel Bastion",
@@ -30,7 +31,7 @@ export default async function PricesPage() {
       startDate: { lte: endDate },
       endDate: { gte: now }
     },
-    include: { room: true },
+    include: { room: true, variants: true },
     orderBy: { startDate: "asc" }
   });
 
@@ -67,22 +68,65 @@ export default async function PricesPage() {
         <h2 className="text-xl font-semibold text-slate-900">
           Сезонные правила на ближайшие 90 дней
         </h2>
+        <p className="mt-2 text-sm text-slate-600">
+          BB — завтрак включён, HB — завтрак и ужин.
+        </p>
         {upcomingRates.length > 0 ? (
-          <div className="mt-4 grid gap-3">
-            {upcomingRates.map((rate) => (
-              <div
-                key={rate.id}
-                className="flex flex-col gap-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <span className="font-medium text-slate-900">
-                  {rate.room.name}
-                </span>
-                <span>
-                  {formatDate(rate.startDate)} – {formatDate(rate.endDate)}
-                </span>
-                <span>{rate.pricePerNight} ₽/ночь</span>
-              </div>
-            ))}
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm text-slate-700">
+              <thead className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                <tr>
+                  <th className="pb-3 pr-4">Номер</th>
+                  <th className="pb-3 pr-4">Период</th>
+                  <th className="pb-3 pr-4">План</th>
+                  <th className="pb-3 pr-4">DBL</th>
+                  <th className="pb-3 pr-4">SNGL</th>
+                  <th className="pb-3">TRPL</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {upcomingRates.map((rate) => {
+                  const getPrice = (occupancy: "DBL" | "SNGL" | "TRPL") =>
+                    rate.variants.find((variant) => variant.occupancy === occupancy)
+                      ?.price ?? null;
+                  const formatValue = (value: number | null) =>
+                    value && value > 0 ? `${value} ₽` : "—";
+                  const mutedClass = (value: number | null) =>
+                    value && value > 0 ? "text-slate-700" : "text-slate-400";
+                  const dbl = getPrice("DBL");
+                  const sngl = getPrice("SNGL");
+                  const trpl = getPrice("TRPL");
+
+                  return (
+                    <tr key={rate.id}>
+                      <td className="py-3 pr-4 font-medium text-slate-900">
+                        {rate.room.name}
+                      </td>
+                      <td className="py-3 pr-4">
+                        {formatDate(rate.startDate)} – {formatDate(rate.endDate)}
+                      </td>
+                      <td className="py-3 pr-4">
+                        <div className="font-medium text-slate-900">
+                          {rate.board}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          {boardDescriptions[rate.board]}
+                        </div>
+                      </td>
+                      <td className={`py-3 pr-4 ${mutedClass(dbl)}`}>
+                        {formatValue(dbl)}
+                      </td>
+                      <td className={`py-3 pr-4 ${mutedClass(sngl)}`}>
+                        {formatValue(sngl)}
+                      </td>
+                      <td className={`py-3 ${mutedClass(trpl)}`}>
+                        {formatValue(trpl)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         ) : (
           <p className="mt-3 text-sm text-slate-600">
