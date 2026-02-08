@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Button, Select } from "../../shared/ui";
+
 const STATUS_OPTIONS = [
   "NEW",
   "IN_PROGRESS",
@@ -47,8 +49,8 @@ export function RequestStatusForm({ id, currentStatus }: Props) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
-        <select
-          className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+        <Select
+          size="s"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
         >
@@ -57,15 +59,15 @@ export function RequestStatusForm({ id, currentStatus }: Props) {
               {option}
             </option>
           ))}
-        </select>
-        <button
+        </Select>
+        <Button
           type="button"
           onClick={handleSave}
-          className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          size="s"
           disabled={isSaving}
         >
           {isSaving ? "Сохраняем..." : "Сохранить"}
-        </button>
+        </Button>
       </div>
       {error ? <span className="text-xs text-rose-600">{error}</span> : null}
     </div>

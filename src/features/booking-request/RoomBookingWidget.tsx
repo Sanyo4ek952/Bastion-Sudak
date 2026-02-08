@@ -14,6 +14,7 @@ import {
   getOccupancyByGuests,
   getRoomConfigBySlug
 } from "../../shared/lib/pricing/roomPricing";
+import { Button, Card, CardContent, Checkbox, Field, Input, Select, Text, Textarea } from "../../shared/ui";
 
 type QuoteState = {
   nights: number;
@@ -206,216 +207,170 @@ export function RoomBookingWidget({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]">
-        <h3 className="text-lg font-semibold text-stone-900">
-          Рассчитать стоимость
-        </h3>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Дата заезда
-            <input
-              type="date"
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-              {...register("checkIn")}
-            />
-            {errors.checkIn ? (
-              <span className="text-xs text-rose-600">{errors.checkIn.message}</span>
-            ) : null}
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Дата выезда
-            <input
-              type="date"
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-              {...register("checkOut")}
-            />
-            {errors.checkOut ? (
-              <span className="text-xs text-rose-600">{errors.checkOut.message}</span>
-            ) : null}
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Гостей
-            <input
-              type="number"
-              min={1}
-              max={10}
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-              {...register("guests", {
-                setValueAs: (value) => (value === "" ? undefined : Number(value))
-              })}
-            />
-            {errors.guests ? (
-              <span className="text-xs text-rose-600">{errors.guests.message}</span>
-            ) : null}
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            План питания
-            <select
-              value={board}
-              onChange={(event) => setBoard(event.target.value as BoardType)}
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-            >
-              <option value="RO">RO — {boardDescriptions.RO}</option>
-              <option value="BB">BB — {boardDescriptions.BB}</option>
-              <option value="HB">HB — {boardDescriptions.HB}</option>
-            </select>
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Тип размещения
-            <select
-              value={occupancy}
-              onChange={(event) =>
-                setOccupancy(event.target.value as "DBL" | "SNGL" | "TRPL")
-              }
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-            >
-              <option value="DBL">DBL — 2 гостя</option>
-              <option value="SNGL">SNGL — 1 гость</option>
-              <option value="TRPL">TRPL — 3 гостя</option>
-            </select>
-            {inferredOccupancy ? (
-              <span className="text-xs text-stone-400">
-                По гостям: {inferredOccupancy.toUpperCase()}
-              </span>
-            ) : null}
-          </label>
-        </div>
+      <Card>
+        <CardContent className="pt-6">
+          <Text className="text-lg font-semibold">Рассчитать стоимость</Text>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Field label="Дата заезда" error={errors.checkIn?.message}>
+              <Input type="date" {...register("checkIn")} />
+            </Field>
+            <Field label="Дата выезда" error={errors.checkOut?.message}>
+              <Input type="date" {...register("checkOut")} />
+            </Field>
+            <Field label="Гостей" error={errors.guests?.message}>
+              <Input
+                type="number"
+                min={1}
+                max={10}
+                {...register("guests", {
+                  setValueAs: (value) => (value === "" ? undefined : Number(value))
+                })}
+              />
+            </Field>
+            <Field label="План питания">
+              <Select
+                value={board}
+                onChange={(event) => setBoard(event.target.value as BoardType)}
+              >
+                <option value="RO">RO — {boardDescriptions.RO}</option>
+                <option value="BB">BB — {boardDescriptions.BB}</option>
+                <option value="HB">HB — {boardDescriptions.HB}</option>
+              </Select>
+            </Field>
+            <Field label="Тип размещения">
+              <Select
+                value={occupancy}
+                onChange={(event) =>
+                  setOccupancy(event.target.value as "DBL" | "SNGL" | "TRPL")
+                }
+              >
+                <option value="DBL">DBL — 2 гостя</option>
+                <option value="SNGL">SNGL — 1 гость</option>
+                <option value="TRPL">TRPL — 3 гостя</option>
+              </Select>
+              {inferredOccupancy ? (
+                <span className="text-xs text-stone-400">
+                  По гостям: {inferredOccupancy.toUpperCase()}
+                </span>
+              ) : null}
+            </Field>
+          </div>
 
-        {localQuote ? (
-          <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-700">
-            <p className="font-semibold">Предварительный расчет</p>
-            <p className="mt-1 text-xs text-stone-500">
-              {localQuote.nights} ночей · {localQuote.pricePerNight} ₽/ночь
-            </p>
-            <p className="mt-2 text-base font-semibold text-stone-900">
-              Итого: {localQuote.total} ₽
-            </p>
-          </div>
-        ) : (
-          <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-500">
-            Выберите даты, план питания и тип размещения, чтобы увидеть стоимость.
-          </div>
-        )}
+          {localQuote ? (
+            <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-700">
+              <Text className="font-semibold">Предварительный расчет</Text>
+              <Text className="mt-1 text-xs text-stone-500">
+                {localQuote.nights} ночей · {localQuote.pricePerNight} ₽/ночь
+              </Text>
+              <Text className="mt-2 text-base font-semibold text-stone-900">
+                Итого: {localQuote.total} ₽
+              </Text>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-2xl border border-sand-100 bg-sand-50 px-4 py-3 text-sm text-stone-500">
+              Выберите даты, план питания и тип размещения, чтобы увидеть стоимость.
+            </div>
+          )}
 
-        <button
-          type="button"
-          onClick={handleQuote}
-          className="mt-4 inline-flex items-center justify-center rounded-full border border-sand-100 px-5 py-2 text-sm font-semibold text-stone-600 transition duration-150 ease-out hover:border-sea-500 hover:text-stone-900"
-        >
-          Рассчитать стоимость
-        </button>
-        {quoteError ? (
-          <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {quoteError}
-          </div>
-        ) : null}
-        {quote ? (
-          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-            <p className="font-semibold">
-              {quote.nights} ночей · {quote.total} {quote.currency}
-            </p>
-            <ul className="mt-2 grid gap-1 text-xs text-emerald-700">
-              {quote.nightly.map((item) => (
-                <li key={item.date}>
-                  {item.date}: {item.price} {quote.currency}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </div>
-
-      <form
-        onSubmit={onSubmit}
-        className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]"
-      >
-        <h3 className="text-lg font-semibold text-stone-900">
-          Запросить бронирование
-        </h3>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label
-            className="hidden"
-            aria-hidden="true"
-          >
-            Website
-            <input type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Имя
-            <input
-              type="text"
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-              placeholder="Анна"
-              {...register("name")}
-            />
-            {errors.name ? (
-              <span className="text-xs text-rose-600">{errors.name.message}</span>
-            ) : null}
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-stone-600">
-            Телефон *
-            <input
-              type="tel"
-              className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-              placeholder="+7 (900) 000-00-00"
-              {...register("phone")}
-            />
-            {errors.phone ? (
-              <span className="text-xs text-rose-600">{errors.phone.message}</span>
-            ) : null}
-          </label>
-        </div>
-        <label className="mt-4 flex flex-col gap-2 text-sm text-stone-600">
-          Комментарий
-          <textarea
-            rows={4}
-            className="rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm focus-ring"
-            placeholder="Например, нужна детская кроватка"
-            {...register("comment")}
-          />
-          {errors.comment ? (
-            <span className="text-xs text-rose-600">{errors.comment.message}</span>
+          <Button type="button" onClick={handleQuote} variant="secondary" className="mt-4">
+            Рассчитать стоимость
+          </Button>
+          {quoteError ? (
+            <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              {quoteError}
+            </div>
           ) : null}
-        </label>
-        <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
-          <input
-            type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-sand-100 accent-sea-500 focus-ring"
-            {...register("consent")}
-          />
-          <span>
-            Я согласен(а) на обработку персональных данных и получение обратного
-            звонка
-          </span>
-        </label>
-        {errors.consent ? (
-          <span className="text-xs text-rose-600">{errors.consent.message}</span>
-        ) : null}
+          {quote ? (
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+              <Text className="font-semibold">
+                {quote.nights} ночей · {quote.total} {quote.currency}
+              </Text>
+              <ul className="mt-2 grid gap-1 text-xs text-emerald-700">
+                {quote.nightly.map((item) => (
+                  <li key={item.date}>
+                    {item.date}: {item.price} {quote.currency}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
-        {submitError ? (
-          <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {submitError}
-          </div>
-        ) : null}
+      <Card>
+        <CardContent className="pt-6">
+          <form onSubmit={onSubmit}>
+            <Text className="text-lg font-semibold">Запросить бронирование</Text>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <label className="hidden" aria-hidden="true">
+                Website
+                <Input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  {...register("website")}
+                />
+              </label>
+              <Field label="Имя" error={errors.name?.message}>
+                <Input type="text" placeholder="Анна" {...register("name")} />
+              </Field>
+              <Field label="Телефон" required error={errors.phone?.message}>
+                <Input
+                  type="tel"
+                  placeholder="+7 (900) 000-00-00"
+                  {...register("phone")}
+                />
+              </Field>
+            </div>
+            <Field
+              label="Комментарий"
+              error={errors.comment?.message}
+              className="mt-4"
+            >
+              <Textarea
+                rows={4}
+                placeholder="Например, нужна детская кроватка"
+                {...register("comment")}
+              />
+            </Field>
+            <label className="mt-4 flex items-start gap-2 text-sm text-stone-600">
+              <Checkbox {...register("consent")} />
+              <span>
+                Я согласен(а) на обработку персональных данных и получение обратного
+                звонка
+              </span>
+            </label>
+            {errors.consent ? (
+              <span className="text-xs text-rose-600">{errors.consent.message}</span>
+            ) : null}
 
-        {status === "success" ? (
-          <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            Спасибо! Мы свяжемся с вами для подтверждения бронирования.
-          </div>
-        ) : null}
+            {submitError ? (
+              <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {submitError}
+              </div>
+            ) : null}
 
-        <button
-          type="submit"
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-sea-500 px-6 py-3 text-sm font-semibold text-sand-50 transition duration-150 ease-out hover:bg-sea-600 disabled:cursor-not-allowed disabled:bg-sand-100 disabled:text-stone-600"
-          disabled={status === "loading" || isSubmitting}
-        >
-          {status === "loading" || isSubmitting
-            ? "Отправляем..."
-            : status === "success"
-              ? "Запрос отправлен"
-              : "Отправить запрос"}
-        </button>
-      </form>
+            {status === "success" ? (
+              <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                Спасибо! Мы свяжемся с вами для подтверждения бронирования.
+              </div>
+            ) : null}
+
+            <Button
+              type="submit"
+              className="mt-6"
+              disabled={status === "loading" || isSubmitting}
+              size="l"
+            >
+              {status === "loading" || isSubmitting
+                ? "Отправляем..."
+                : status === "success"
+                  ? "Запрос отправлен"
+                  : "Отправить запрос"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

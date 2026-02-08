@@ -10,7 +10,7 @@ import {
   getRoomConfigBySlug,
   normalizeOccupancyParam
 } from "../../shared/lib/pricing/roomPricing";
-import { Container } from "../../shared/ui/Container";
+import { Button, Container, H1, Select, Small, Text } from "../../shared/ui";
 import { prisma } from "../../shared/lib/prisma";
 
 export const metadata: Metadata = {
@@ -58,13 +58,13 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
     <section className="py-12">
       <Container className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
-          <p className="text-caption uppercase tracking-[0.2em] text-stone-600">
+          <Small className="uppercase tracking-[0.2em] text-stone-600">
             Номера
-          </p>
-          <h1>Каталог номеров</h1>
-          <p className="text-body-large text-stone-600">
+          </Small>
+          <H1>Каталог номеров</H1>
+          <Text className="text-body-large text-stone-600">
             Подберите вариант проживания и отправьте запрос на бронирование.
-          </p>
+          </Text>
           <Link className="text-sm text-stone-600 hover:text-stone-900" href="/prices">
             Сезонные цены →
           </Link>
@@ -72,18 +72,18 @@ export default async function RoomsPage({ searchParams }: RoomsPageProps) {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <button className="rounded-full border border-sand-100 px-4 py-2 text-sm text-stone-600">
+            <Button variant="secondary" size="s">
               Сетка
-            </button>
-            <button className="rounded-full border border-sand-100 px-4 py-2 text-sm text-stone-600">
+            </Button>
+            <Button variant="secondary" size="s">
               Список
-            </button>
+            </Button>
           </div>
-          <select className="rounded-2xl border border-sand-100 bg-sand-50 px-4 py-2 text-sm text-stone-900 focus-ring">
+          <Select size="s">
             <option>По популярности</option>
             <option>По цене</option>
             <option>По рейтингу</option>
-          </select>
+          </Select>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[280px_1fr]">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Badge } from "../shared/ui";
+import { Badge, H3, Small, Text } from "../shared/ui";
 import { Button } from "../shared/ui/button";
 
 export type RoomCardProps = {
@@ -60,8 +60,8 @@ export function RoomCard({
       </div>
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="space-y-2">
-          <h3>{name}</h3>
-          <p className="text-sm text-stone-600">{description}</p>
+          <H3 className="text-lg">{name}</H3>
+          <Text className="text-sm text-stone-600">{description}</Text>
           <div className="flex flex-wrap gap-2 text-xs text-stone-600">
             {amenities.map((amenity) => (
               <Badge
@@ -75,10 +75,8 @@ export function RoomCard({
         </div>
         <div className="mt-auto flex items-center justify-between">
           <div>
-            <p className="text-caption uppercase tracking-[0.2em] text-stone-600">
-              от
-            </p>
-            <p className="text-lg font-semibold text-stone-900">{price}</p>
+            <Small className="uppercase tracking-[0.2em] text-stone-600">от</Small>
+            <Text className="text-lg font-semibold text-stone-900">{price}</Text>
           </div>
           {bookingAction}
         </div>

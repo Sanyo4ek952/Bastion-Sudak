@@ -6,8 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { getOccupancyByGuests } from "../shared/lib/pricing/roomPricing";
-import { buttonVariants } from "../shared/ui/button";
-import { Card, CardContent, Muted, Text, useToast } from "../shared/ui";
+import { Button, Card, CardContent, Checkbox, Field, Input, Muted, Select, Text, useToast } from "../shared/ui";
 import { Stepper } from "./Stepper";
 
 const steps = ["Даты", "Гости", "Услуги", "Оплата"];
@@ -36,8 +35,6 @@ type PriceState = {
   error?: string | null;
 };
 
-const baseInputClasses =
-  "rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 focus-ring";
 
 const bookingFormSchema = z
   .object({
@@ -310,39 +307,15 @@ export function BookingForm() {
           {step === 0 ? (
             <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
-                <label className="flex flex-col gap-2 text-sm text-stone-600">
-                  Заезд
-                  <input
-                    type="date"
-                    className={baseInputClasses}
-                    aria-invalid={Boolean(errors.checkIn)}
-                    {...register("checkIn")}
-                  />
-                  {errors.checkIn ? (
-                    <span className="text-xs text-rose-600">
-                      {errors.checkIn.message}
-                    </span>
-                  ) : null}
-                </label>
-                <label className="flex flex-col gap-2 text-sm text-stone-600">
-                  Выезд
-                  <input
-                    type="date"
-                    className={baseInputClasses}
-                    aria-invalid={Boolean(errors.checkOut)}
-                    {...register("checkOut")}
-                  />
-                  {errors.checkOut ? (
-                    <span className="text-xs text-rose-600">
-                      {errors.checkOut.message}
-                    </span>
-                  ) : null}
-                </label>
+                <Field label="Заезд" error={errors.checkIn?.message}>
+                  <Input type="date" invalid={Boolean(errors.checkIn)} {...register("checkIn")} />
+                </Field>
+                <Field label="Выезд" error={errors.checkOut?.message}>
+                  <Input type="date" invalid={Boolean(errors.checkOut)} {...register("checkOut")} />
+                </Field>
               </div>
-              <label className="flex flex-col gap-2 text-sm text-stone-600">
-                Номер
-                <select
-                  className={baseInputClasses}
+              <Field label="Номер" error={errors.roomId?.message}>
+                <Select
                   aria-invalid={Boolean(errors.roomId)}
                   disabled={roomsStatus === "loading"}
                   {...register("roomId")}
@@ -358,72 +331,45 @@ export function BookingForm() {
                       /ночь
                     </option>
                   ))}
-                </select>
+                </Select>
                 {roomsStatus === "error" ? (
                   <span className="text-xs text-rose-600">{roomsError}</span>
                 ) : null}
-                {errors.roomId ? (
-                  <span className="text-xs text-rose-600">
-                    {errors.roomId.message}
-                  </span>
-                ) : null}
-              </label>
+              </Field>
             </div>
           ) : null}
 
           {step === 1 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm text-stone-600">
-                Взрослых
-                <input
+              <Field label="Взрослых" error={errors.adults?.message}>
+                <Input
                   type="number"
                   min={0}
                   max={6}
-                  className={baseInputClasses}
-                  aria-invalid={Boolean(errors.adults)}
+                  invalid={Boolean(errors.adults)}
                   {...register("adults")}
                 />
-                {errors.adults ? (
-                  <span className="text-xs text-rose-600">
-                    {errors.adults.message}
-                  </span>
-                ) : null}
-              </label>
-              <label className="flex flex-col gap-2 text-sm text-stone-600">
-                Детей
-                <input
+              </Field>
+              <Field label="Детей" error={errors.children?.message}>
+                <Input
                   type="number"
                   min={0}
                   max={6}
-                  className={baseInputClasses}
-                  aria-invalid={Boolean(errors.children)}
+                  invalid={Boolean(errors.children)}
                   {...register("children")}
                 />
-                {errors.children ? (
-                  <span className="text-xs text-rose-600">
-                    {errors.children.message}
-                  </span>
-                ) : null}
-              </label>
+              </Field>
             </div>
           ) : null}
 
           {step === 2 ? (
             <div className="space-y-3">
               <label className="flex items-center gap-3 text-sm text-stone-600">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-sand-100 accent-sea-500"
-                  {...register("services.breakfast")}
-                />
+                <Checkbox {...register("services.breakfast")} />
                 Завтрак (+{SERVICE_PRICES.breakfast.pricePerPerson} ₽/чел/ночь)
               </label>
               <label className="flex items-center gap-3 text-sm text-stone-600">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-sand-100 accent-sea-500"
-                  {...register("services.transfer")}
-                />
+                <Checkbox {...register("services.transfer")} />
                 Трансфер (+{SERVICE_PRICES.transfer.priceFixed} ₽)
               </label>
             </div>
@@ -440,9 +386,9 @@ export function BookingForm() {
                   Цена недоступна. Проверьте даты или выберите другой номер.
                 </Text>
               ) : null}
-              <button
-                className={buttonVariants({ size: "l" })}
+              <Button
                 type="button"
+                size="l"
                 disabled={priceUnavailable}
                 onClick={() =>
                   notify({
@@ -453,7 +399,7 @@ export function BookingForm() {
                 }
               >
                 Отправить заявку
-              </button>
+              </Button>
             </div>
           ) : null}
         </CardContent>
@@ -518,22 +464,23 @@ export function BookingForm() {
       </Card>
 
       <div className="flex flex-wrap gap-3">
-        <button
+        <Button
           type="button"
-          className={buttonVariants({ variant: "secondary", size: "s" })}
+          variant="secondary"
+          size="s"
           onClick={() => setStep((prev) => Math.max(prev - 1, 0))}
           disabled={step === 0}
         >
           Назад
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className={buttonVariants({ size: "s" })}
+          size="s"
           onClick={() => setStep((prev) => Math.min(prev + 1, steps.length - 1))}
           disabled={step === steps.length - 1}
         >
           Далее
-        </button>
+        </Button>
       </div>
     </div>
   );

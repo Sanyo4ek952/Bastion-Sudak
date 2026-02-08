@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Modal } from "./Modal";
+import { Button } from "../shared/ui";
 
 type RoomGalleryProps = {
   name: string;
@@ -20,18 +21,20 @@ export function RoomGallery({ name, images }: RoomGalleryProps) {
     <div>
       <div className="grid gap-4 sm:grid-cols-2">
         {images.map((image) => (
-          <button
+          <Button
             key={image.id}
             type="button"
             onClick={() => setIsOpen(true)}
-            className="h-56 overflow-hidden rounded-3xl border border-sand-100 bg-sand-100 focus-ring"
+            variant="ghost"
+            size="s"
+            className="h-56 overflow-hidden rounded-3xl border border-sand-100 bg-sand-100 p-0 focus-ring"
           >
             <img
               src={image.url}
               alt={image.alt ?? name}
               className="h-full w-full object-cover"
             />
-          </button>
+          </Button>
         ))}
       </div>
       <Modal

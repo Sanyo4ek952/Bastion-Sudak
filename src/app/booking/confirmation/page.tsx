@@ -1,7 +1,6 @@
 import Link from "next/link";
 
-import { buttonVariants } from "../../../shared/ui/button";
-import { Card, CardContent, Container, H1, Text } from "../../../shared/ui";
+import { Button, Card, CardContent, Container, H1, Text } from "../../../shared/ui";
 
 export default function BookingConfirmationPage() {
   return (
@@ -26,12 +25,12 @@ export default function BookingConfirmationPage() {
           </CardContent>
         </Card>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href="/" className={buttonVariants({ size: "s" })}>
-            На главную
-          </Link>
-          <button className={buttonVariants({ variant: "secondary", size: "s" })}>
+          <Button asChild size="s">
+            <Link href="/">На главную</Link>
+          </Button>
+          <Button variant="secondary" size="s">
             Добавить в календарь
-          </button>
+          </Button>
         </div>
       </Container>
     </section>
