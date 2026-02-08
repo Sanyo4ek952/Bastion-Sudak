@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Container } from "../../../shared/ui/Container";
-import { buttonVariants } from "../../../shared/ui/Button";
+import { buttonVariants } from "../../../shared/ui/button";
 
 export default function BookingConfirmationPage() {
   return (

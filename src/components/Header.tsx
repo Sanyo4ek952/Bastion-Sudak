@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { buttonVariants } from "../shared/ui/Button";
+import { Button } from "../shared/ui/button";
 import { Container } from "../shared/ui/Container";
 
 const navItems = [
@@ -50,15 +50,12 @@ export function Header() {
           >
             +7 (999) 000-11-22
           </a>
-          <Link
-            href="/booking"
-            className={buttonVariants({ size: "s", variant: "secondary" })}
-          >
-            Войти
-          </Link>
-          <a href="#lead-form" className={buttonVariants({ size: "s" })}>
-            Бронирование
-          </a>
+          <Button asChild size="s" variant="secondary">
+            <Link href="/booking">Войти</Link>
+          </Button>
+          <Button asChild size="s">
+            <a href="#lead-form">Бронирование</a>
+          </Button>
         </div>
       </Container>
     </header>
