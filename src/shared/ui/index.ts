@@ -3,6 +3,18 @@ export { Button, buttonVariants } from "./button";
 export { Card, CardContent, CardFooter, CardHeader } from "./Card";
 export { Container } from "./Container";
 export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuTrigger
+} from "./dropdown-menu";
+export {
   Dialog,
   DialogClose,
   DialogCloseButton,
