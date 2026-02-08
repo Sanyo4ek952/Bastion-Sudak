@@ -14,7 +14,7 @@ import {
   getRoomConfigBySlug,
   normalizeOccupancyParam
 } from "../../../shared/lib/pricing/roomPricing";
-import { Container } from "../../../shared/ui/Container";
+import { Container, Separator } from "../../../shared/ui";
 import { prisma } from "../../../shared/lib/prisma";
 
 type RoomPageProps = {
@@ -135,6 +135,8 @@ export default async function RoomDetailsPage({
             </div>
 
             <RoomGallery name={room.name} images={room.images} />
+
+            <Separator />
 
             <div className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]">
               <h2 className="text-2xl">Описание</h2>

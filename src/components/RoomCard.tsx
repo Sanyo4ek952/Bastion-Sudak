@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Badge } from "../shared/ui";
 import { Button } from "../shared/ui/button";
 
 export type RoomCardProps = {
@@ -53,9 +54,9 @@ export function RoomCard({
             Фото скоро
           </div>
         )}
-        <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-stone-900">
+        <Badge className="absolute left-4 top-4 bg-white/90 text-stone-900">
           {rating.toFixed(1)} ★
-        </div>
+        </Badge>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-6">
         <div className="space-y-2">
@@ -63,12 +64,12 @@ export function RoomCard({
           <p className="text-sm text-stone-600">{description}</p>
           <div className="flex flex-wrap gap-2 text-xs text-stone-600">
             {amenities.map((amenity) => (
-              <span
+              <Badge
                 key={amenity}
-                className="rounded-full border border-sand-100 bg-sand-50 px-3 py-1"
+                className="border-sand-100 bg-sand-50 text-xs normal-case tracking-normal text-stone-600"
               >
                 {amenity}
-              </span>
+              </Badge>
             ))}
           </div>
         </div>

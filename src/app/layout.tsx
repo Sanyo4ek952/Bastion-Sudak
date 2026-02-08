@@ -4,6 +4,7 @@ import { Inter, Manrope } from "next/font/google";
 
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
+import { ToastProvider } from "../shared/ui";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -30,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${inter.variable} ${manrope.variable}`}>
       <body className="min-h-screen">
-        <Header />
-        <main className="flex min-h-screen flex-col gap-24 py-12">
-          {children}
-        </main>
-        <Footer />
+        <ToastProvider>
+          <Header />
+          <main className="flex min-h-screen flex-col gap-24 py-12">
+            {children}
+          </main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
