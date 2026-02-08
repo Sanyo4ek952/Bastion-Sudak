@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "../../../../../shared/lib/prisma";
@@ -7,9 +8,10 @@ const statusSchema = z.object({
 });
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   let payload: unknown;
   try {
     payload = await request.json();
@@ -31,7 +33,7 @@ export async function PATCH(
 
   try {
     const updated = await prisma.bookingRequest.update({
-      where: { id: params.id },
+      where: { id },
       data: { status: result.data.status }
     });
 
