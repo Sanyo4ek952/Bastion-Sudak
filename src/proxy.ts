@@ -35,7 +35,7 @@ export const config = {
   matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
 
-export const middleware = (request: NextRequest): NextResponse => {
+export const proxy = (request: NextRequest): NextResponse => {
   const expectedUser = process.env.ADMIN_BASIC_USER ?? "";
   const expectedPass = process.env.ADMIN_BASIC_PASS ?? "";
 

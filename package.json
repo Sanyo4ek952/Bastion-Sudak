@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "pnpm prisma:generate && tsc --noEmit",
-    "test": "node --test --import tsx",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
