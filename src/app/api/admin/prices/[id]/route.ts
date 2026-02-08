@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "../../../../../shared/lib/prisma";
@@ -30,9 +31,10 @@ const parseDate = (value: string) => {
 };
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   let payload: unknown;
   try {
     payload = await request.json();
@@ -75,7 +77,7 @@ export async function PUT(
   const overlap = await prisma.seasonalRate.findFirst({
     where: {
       roomId: result.data.roomId,
-      id: { not: params.id },
+      id: { not: id },
       board: result.data.board,
       startDate: { lte: endDate },
       endDate: { gte: startDate }
@@ -92,7 +94,7 @@ export async function PUT(
   try {
     const updated = await prisma.$transaction(async (tx) => {
       const rate = await tx.seasonalRate.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           roomId: result.data.roomId,
           startDate,
@@ -102,12 +104,12 @@ export async function PUT(
       });
 
       await tx.seasonalRateVariant.deleteMany({
-        where: { seasonalRateId: params.id }
+        where: { seasonalRateId: id }
       });
 
       await tx.seasonalRateVariant.createMany({
         data: result.data.variants.map((variant) => ({
-          seasonalRateId: params.id,
+          seasonalRateId: id,
           occupancy: variant.occupancy,
           price: variant.price
         }))
@@ -125,11 +127,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
-    await prisma.seasonalRate.delete({ where: { id: params.id } });
+    await prisma.seasonalRate.delete({ where: { id } });
     return Response.json({ ok: true });
   } catch (error) {
     return Response.json(

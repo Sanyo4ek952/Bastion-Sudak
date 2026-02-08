@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { prisma } from "../../../../../shared/lib/prisma";
@@ -21,9 +22,10 @@ const roomSchema = z.object({
 });
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   let payload: unknown;
   try {
     payload = await request.json();
@@ -55,10 +57,10 @@ export async function PUT(
 
   try {
     const updated = await prisma.$transaction(async (tx) => {
-      await tx.roomImage.deleteMany({ where: { roomId: params.id } });
+      await tx.roomImage.deleteMany({ where: { roomId: id } });
 
       return tx.room.update({
-        where: { id: params.id },
+        where: { id },
         data: {
           name: result.data.name,
           slug,
@@ -90,11 +92,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
-    await prisma.room.delete({ where: { id: params.id } });
+    await prisma.room.delete({ where: { id } });
     return Response.json({ ok: true });
   } catch (error) {
     return Response.json(
