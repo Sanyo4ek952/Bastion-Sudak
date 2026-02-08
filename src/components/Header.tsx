@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "../shared/ui";
 import { Button } from "../shared/ui/button";
 import { Container } from "../shared/ui/Container";
 
@@ -44,6 +52,31 @@ export function Header() {
           )}
         </nav>
         <div className="flex items-center gap-3">
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="s" variant="secondary">
+                  Меню
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Навигация</DropdownMenuLabel>
+                {navItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    {item.href.startsWith("#") ? (
+                      <a href={item.href}>{item.label}</a>
+                    ) : (
+                      <Link href={item.href}>{item.label}</Link>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <a href="tel:+79990001122">Позвонить</a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <a
             href="tel:+79990001122"
             className="hidden text-sm font-semibold text-stone-600 md:inline-flex"
