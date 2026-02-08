@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { leadFormSchema } from "./schema";
 import type { LeadFormValues } from "./types";
 import { normalizePhone } from "./utils";
-import { Button } from "../../shared/ui/Button";
+import { Button } from "../../shared/ui/button";
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { buttonVariants } from "../shared/ui/Button";
+import { Button } from "../shared/ui/button";
 
 export type RoomCardProps = {
   name: string;
@@ -23,25 +23,20 @@ export function RoomCard({
   slug,
   isLinkWrapped = false
 }: RoomCardProps) {
-  const bookingClasses = buttonVariants({
-    size: "s",
-    className:
-      "translate-y-2 opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
-  });
+  const bookingClasses =
+    "translate-y-2 opacity-0 transition duration-150 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100";
 
   const bookingAction =
     slug && !isLinkWrapped ? (
-      <Link
-        className={bookingClasses}
-        href={`/rooms/${slug}`}
-        aria-label={`Забронировать ${name}`}
-      >
-        Забронировать
-      </Link>
+      <Button asChild size="s" className={bookingClasses}>
+        <Link href={`/rooms/${slug}`} aria-label={`Забронировать ${name}`}>
+          Забронировать
+        </Link>
+      </Button>
     ) : (
-      <span className={bookingClasses} aria-hidden={isLinkWrapped}>
-        Забронировать
-      </span>
+      <Button asChild size="s" className={bookingClasses}>
+        <span aria-hidden={isLinkWrapped}>Забронировать</span>
+      </Button>
     );
 
   return (

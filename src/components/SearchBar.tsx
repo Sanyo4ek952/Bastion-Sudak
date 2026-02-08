@@ -1,4 +1,4 @@
-import { buttonVariants } from "../shared/ui/Button";
+import { Button } from "../shared/ui/button";
 
 export function SearchBar() {
   return (
@@ -43,9 +43,9 @@ export function SearchBar() {
               <option value="HB">HB · завтрак и ужин</option>
             </select>
           </label>
-          <button className={buttonVariants({ size: "l" })} type="submit">
+          <Button size="l" type="submit">
             Найти номер
-          </button>
+          </Button>
         </form>
       </div>
       <div className="fixed inset-x-4 bottom-4 z-40 rounded-2xl border border-sand-100 bg-white/95 p-3 shadow-[0_16px_40px_-24px_rgba(43,42,40,0.35)] md:hidden">
@@ -58,9 +58,9 @@ export function SearchBar() {
               Даты и гости
             </p>
           </div>
-          <button className={buttonVariants({ size: "s" })} type="button">
+          <Button size="s" type="button">
             Найти
-          </button>
+          </Button>
         </div>
       </div>
     </div>

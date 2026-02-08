@@ -6,7 +6,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { getOccupancyByGuests } from "../shared/lib/pricing/roomPricing";
-import { buttonVariants } from "../shared/ui/Button";
+import { buttonVariants } from "../shared/ui/button";
 import { Stepper } from "./Stepper";
 
 const steps = ["Даты", "Гости", "Услуги", "Оплата"];
