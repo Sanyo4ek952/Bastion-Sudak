@@ -8,6 +8,7 @@ import { leadFormSchema } from "./schema";
 import type { LeadFormValues } from "./types";
 import { normalizePhone } from "./utils";
 import { Button } from "../../shared/ui/button";
+import { Field, Input, Textarea } from "../../shared/ui/form";
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
@@ -25,9 +26,6 @@ const defaultValues: LeadFormValues = {
 export function LeadForm() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const baseInputClasses =
-    "h-11 w-full rounded-2xl border border-sand-100 bg-sand-50 px-3 text-base text-stone-900 shadow-sm transition duration-150 ease-out focus-ring";
 
   const {
     register,
@@ -96,127 +94,96 @@ export function LeadForm() {
             {...register("website")}
           />
         </div>
-        <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-          <label htmlFor="lead-name">Имя</label>
-          <input
+        <Field
+          label="Имя"
+          htmlFor="lead-name"
+          error={errors.name?.message}
+        >
+          <Input
             id="lead-name"
             type="text"
-            aria-invalid={Boolean(errors.name)}
-            className={[
-              baseInputClasses,
-              errors.name ? "border-rose-400 focus-visible:ring-rose-200" : "",
-            ].join(" ")}
             placeholder="Анна"
+            invalid={Boolean(errors.name)}
             {...register("name")}
           />
-          {errors.name ? (
-            <span className="text-xs text-rose-600">{errors.name.message}</span>
-          ) : null}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-          <label htmlFor="lead-phone">Телефон *</label>
-          <input
+        <Field
+          label="Телефон"
+          htmlFor="lead-phone"
+          required
+          error={errors.phone?.message}
+        >
+          <Input
             id="lead-phone"
             type="tel"
-            aria-invalid={Boolean(errors.phone)}
-            className={[
-              baseInputClasses,
-              errors.phone ? "border-rose-400 focus-visible:ring-rose-200" : "",
-            ].join(" ")}
             placeholder="+7 (900) 000-00-00"
+            invalid={Boolean(errors.phone)}
             {...register("phone")}
           />
-          {errors.phone ? (
-            <span className="text-xs text-rose-600">{errors.phone.message}</span>
-          ) : null}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-          <label htmlFor="lead-checkin">Дата заезда</label>
-          <input
+        <Field
+          label="Дата заезда"
+          htmlFor="lead-checkin"
+          error={errors.checkIn?.message}
+        >
+          <Input
             id="lead-checkin"
             type="date"
-            aria-invalid={Boolean(errors.checkIn)}
-            className={[
-              baseInputClasses,
-              errors.checkIn
-                ? "border-rose-400 focus-visible:ring-rose-200"
-                : "",
-            ].join(" ")}
+            invalid={Boolean(errors.checkIn)}
             {...register("checkIn", {
-              setValueAs: (value) => (value === "" ? undefined : value),
+              setValueAs: (value) => (value === "" ? undefined : value)
             })}
           />
-          {errors.checkIn ? (
-            <span className="text-xs text-rose-600">
-              {errors.checkIn.message}
-            </span>
-          ) : null}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-          <label htmlFor="lead-checkout">Дата выезда</label>
-          <input
+        <Field
+          label="Дата выезда"
+          htmlFor="lead-checkout"
+          error={errors.checkOut?.message}
+        >
+          <Input
             id="lead-checkout"
             type="date"
-            aria-invalid={Boolean(errors.checkOut)}
-            className={[
-              baseInputClasses,
-              errors.checkOut
-                ? "border-rose-400 focus-visible:ring-rose-200"
-                : "",
-            ].join(" ")}
+            invalid={Boolean(errors.checkOut)}
             {...register("checkOut", {
-              setValueAs: (value) => (value === "" ? undefined : value),
+              setValueAs: (value) => (value === "" ? undefined : value)
             })}
           />
-          {errors.checkOut ? (
-            <span className="text-xs text-rose-600">
-              {errors.checkOut.message}
-            </span>
-          ) : null}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-          <label htmlFor="lead-guests">Гостей</label>
-          <input
+        <Field
+          label="Гостей"
+          htmlFor="lead-guests"
+          error={errors.guests?.message}
+        >
+          <Input
             id="lead-guests"
             type="number"
             min={1}
             max={10}
-            aria-invalid={Boolean(errors.guests)}
-            className={[
-              baseInputClasses,
-              errors.guests ? "border-rose-400 focus-visible:ring-rose-200" : "",
-            ].join(" ")}
+            invalid={Boolean(errors.guests)}
             {...register("guests", {
-              setValueAs: (value) => (value === "" ? undefined : Number(value)),
+              setValueAs: (value) => (value === "" ? undefined : Number(value))
             })}
           />
-          {errors.guests ? (
-            <span className="text-xs text-rose-600">{errors.guests.message}</span>
-          ) : null}
-        </div>
+        </Field>
       </div>
 
-      <div className="flex flex-col gap-2 text-sm font-medium text-stone-600">
-        <label htmlFor="lead-comment">Комментарий</label>
-        <textarea
+      <Field
+        label="Комментарий"
+        htmlFor="lead-comment"
+        error={errors.comment?.message}
+      >
+        <Textarea
           id="lead-comment"
           rows={4}
-          aria-invalid={Boolean(errors.comment)}
-          className={[
-            "min-h-[120px] w-full rounded-2xl border border-sand-100 bg-sand-50 px-3 py-2 text-base text-stone-900 shadow-sm transition duration-150 ease-out focus-ring",
-            errors.comment ? "border-rose-400 focus-visible:ring-rose-200" : ""
-          ].join(" ")}
           placeholder="Например, нужен номер с видом на море"
+          invalid={Boolean(errors.comment)}
           {...register("comment")}
         />
-        {errors.comment ? (
-          <span className="text-xs text-rose-600">{errors.comment.message}</span>
-        ) : null}
-      </div>
+      </Field>
 
       <div className="flex items-start gap-3 text-sm text-stone-600">
         <input
