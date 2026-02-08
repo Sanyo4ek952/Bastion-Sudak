@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 import { leadFormSchema } from "./schema";
 import type { LeadFormValues } from "./types";
 import { normalizePhone } from "./utils";
-import { Button } from "../../shared/ui/button";
-import { Field, Input, Textarea } from "../../shared/ui/form";
+import { Button, Checkbox, Field, Input, Textarea } from "../../shared/ui";
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
@@ -86,7 +85,7 @@ export function LeadForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="sr-only" aria-hidden="true">
           <label htmlFor="lead-website">Website</label>
-          <input
+          <Input
             id="lead-website"
             type="text"
             tabIndex={-1}
@@ -186,10 +185,9 @@ export function LeadForm() {
       </Field>
 
       <div className="flex items-start gap-3 text-sm text-stone-600">
-        <input
+        <Checkbox
           id="lead-consent"
-          type="checkbox"
-          className="mt-1 h-4 w-4 rounded border-sand-100 accent-sea-500 focus-ring"
+          className="mt-1"
           {...register("consent")}
         />
         <label htmlFor="lead-consent">

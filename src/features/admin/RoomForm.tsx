@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { slugify } from "../../shared/lib/slugify";
+import { Button, Card, CardContent, Checkbox, Field, Input, Textarea } from "../../shared/ui";
 
 type RoomFormProps = {
   mode: "create" | "edit";
@@ -115,127 +116,119 @@ export function RoomForm({ mode, roomId, initialValues }: RoomFormProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
-    >
-      <div className="flex flex-col gap-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
-            Название
-            <input
-              type="text"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              required
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
-            Slug
-            <input
-              type="text"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-              value={slug}
-              onChange={(event) => {
-                setSlug(event.target.value);
-                setSlugTouched(true);
-              }}
-            />
-          </label>
-        </div>
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Описание
-          <textarea
-            rows={4}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-        </label>
-        <div className="grid gap-4 md:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
-            Вместимость
-            <input
-              type="number"
-              min={1}
-              max={10}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-              value={capacity}
-              onChange={(event) => setCapacity(Number(event.target.value))}
-            />
-          </label>
-          <label className="flex flex-col gap-2 text-sm text-slate-700">
-            Базовая цена (₽/ночь)
-            <input
-              type="number"
-              min={0}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-              value={basePrice}
-              onChange={(event) => setBasePrice(Number(event.target.value))}
-              required
-            />
-          </label>
-        </div>
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Удобства (по одному на строку)
-          <textarea
-            rows={4}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-            value={amenities}
-            onChange={(event) => setAmenities(event.target.value)}
-          />
-        </label>
-        <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Изображения (url | alt, по одному на строку)
-          <textarea
-            rows={4}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-base text-slate-900 shadow-sm"
-            value={images}
-            onChange={(event) => setImages(event.target.value)}
-          />
-        </label>
-        {imagesPreview.length > 0 ? (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {imagesPreview.map((image) => (
-              <div
-                key={`${image.url}-${image.sortOrder}`}
-                className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
-              >
-                <img
-                  src={image.url}
-                  alt={image.alt ?? "Room image"}
-                  className="h-24 w-full object-cover"
+    <form onSubmit={handleSubmit}>
+      <Card className="shadow-sm">
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Название" htmlFor="room-name" required>
+                <Input
+                  id="room-name"
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  required
                 />
+              </Field>
+              <Field label="Slug" htmlFor="room-slug">
+                <Input
+                  id="room-slug"
+                  type="text"
+                  value={slug}
+                  onChange={(event) => {
+                    setSlug(event.target.value);
+                    setSlugTouched(true);
+                  }}
+                />
+              </Field>
+            </div>
+            <Field label="Описание" htmlFor="room-description">
+              <Textarea
+                id="room-description"
+                rows={4}
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </Field>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Вместимость" htmlFor="room-capacity">
+                <Input
+                  id="room-capacity"
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={capacity}
+                  onChange={(event) => setCapacity(Number(event.target.value))}
+                />
+              </Field>
+              <Field label="Базовая цена (₽/ночь)" htmlFor="room-base-price" required>
+                <Input
+                  id="room-base-price"
+                  type="number"
+                  min={0}
+                  value={basePrice}
+                  onChange={(event) => setBasePrice(Number(event.target.value))}
+                  required
+                />
+              </Field>
+            </div>
+            <Field label="Удобства (по одному на строку)" htmlFor="room-amenities">
+              <Textarea
+                id="room-amenities"
+                rows={4}
+                value={amenities}
+                onChange={(event) => setAmenities(event.target.value)}
+              />
+            </Field>
+            <Field
+              label="Изображения (url | alt, по одному на строку)"
+              htmlFor="room-images"
+            >
+              <Textarea
+                id="room-images"
+                rows={4}
+                value={images}
+                onChange={(event) => setImages(event.target.value)}
+              />
+            </Field>
+            {imagesPreview.length > 0 ? (
+              <div className="grid gap-3 sm:grid-cols-3">
+                {imagesPreview.map((image) => (
+                  <div
+                    key={`${image.url}-${image.sortOrder}`}
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50"
+                  >
+                    <img
+                      src={image.url}
+                      alt={image.alt ?? "Room image"}
+                      className="h-24 w-full object-cover"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : null}
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <Checkbox
+                checked={isActive}
+                onChange={(event) => setIsActive(event.target.checked)}
+              />
+              Активен
+            </label>
+            {error ? (
+              <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {error}
+              </div>
+            ) : null}
+            <Button type="submit" disabled={isSaving} size="l">
+              {isSaving
+                ? "Сохраняем..."
+                : mode === "create"
+                  ? "Создать номер"
+                  : "Сохранить изменения"}
+            </Button>
           </div>
-        ) : null}
-        <label className="flex items-center gap-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            checked={isActive}
-            onChange={(event) => setIsActive(event.target.checked)}
-          />
-          Активен
-        </label>
-        {error ? (
-          <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-            {error}
-          </div>
-        ) : null}
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          disabled={isSaving}
-        >
-          {isSaving
-            ? "Сохраняем..."
-            : mode === "create"
-              ? "Создать номер"
-              : "Сохранить изменения"}
-        </button>
-      </div>
+        </CardContent>
+      </Card>
     </form>
   );
 }

@@ -27,7 +27,7 @@ export {
   DialogTitle,
   DialogTrigger
 } from "./dialog";
-export { Field, Input, Select, Textarea } from "./form";
+export { Checkbox, Field, Input, Select, Textarea } from "./form";
 export { SectionHeader } from "./SectionHeader";
 export { Separator } from "./Separator";
 export { Spinner } from "./spinner";

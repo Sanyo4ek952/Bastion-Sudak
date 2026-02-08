@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Button } from "../../shared/ui";
+
 export function SeasonalRateDeleteButton({ id }: { id: string }) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -21,13 +23,15 @@ export function SeasonalRateDeleteButton({ id }: { id: string }) {
   };
 
   return (
-    <button
+    <Button
       type="button"
       onClick={handleDelete}
-      className="text-xs text-rose-600 hover:text-rose-800 disabled:text-slate-400"
+      variant="link"
+      size="s"
+      className="text-rose-600 hover:text-rose-800 disabled:text-slate-400"
       disabled={isDeleting}
     >
       {isDeleting ? "Удаляем..." : "Удалить"}
-    </button>
+    </Button>
   );
 }

@@ -137,9 +137,9 @@ Admin pages:
 
 Design tokens live in `src/app/globals.css` as CSS variables. Tailwind maps them in
 `tailwind.config.ts` (background, foreground, muted, card, border, accent).
-To extend the UI, reuse shared components under `src/shared/ui` (Button, Card,
-SectionHeader, Container, Badge) and keep sections wrapped in `Container` for
-consistent spacing.
+UI components live in `src/shared/ui`. To extend the UI, reuse shared components
+(Button, Card, SectionHeader, Container, Badge) and keep sections wrapped in
+`Container` for consistent spacing.
 
 ## Endpoints
 

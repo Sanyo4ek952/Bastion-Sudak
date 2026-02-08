@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Field, Input, Select } from "../../shared/ui/form";
+import { Button, Field, Input, Select } from "../../shared/ui";
 
 type RateFormProps = {
   mode: "create" | "edit";
@@ -155,17 +155,18 @@ export function SeasonalRateForm({
           {error}
         </div>
       ) : null}
-      <button
+      <Button
         type="submit"
-        className="inline-flex w-fit items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
         disabled={isSaving}
+        size="s"
+        className="w-fit"
       >
         {isSaving
           ? "Сохраняем..."
           : mode === "create"
             ? "Добавить тариф"
             : "Сохранить"}
-      </button>
+      </Button>
     </form>
   );
 }

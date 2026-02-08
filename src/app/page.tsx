@@ -11,6 +11,7 @@ import {
   Container,
   H1,
   SectionHeader,
+  Small,
   Text
 } from "../shared/ui";
 
@@ -168,36 +169,40 @@ export default function HomePage() {
             title="Центр курортной жизни Судака"
             subtitle="Пляж, кафе и прогулочные маршруты доступны пешком. Мы подскажем лучшие места для отдыха и гастрономии."
           />
-          <div className="rounded-3xl border border-sand-100 bg-sand-100/70 p-6">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="text-caption uppercase tracking-[0.2em] text-stone-600">
-                  Адрес
-                </p>
-                <p className="text-lg font-semibold text-stone-900">
-                  Судак, набережная (уточняется)
-                </p>
+          <Card variant="soft" className="shadow-none">
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <Small className="uppercase tracking-[0.2em] text-stone-600">
+                    Адрес
+                  </Small>
+                  <Text className="text-lg font-semibold text-stone-900">
+                    Судак, набережная (уточняется)
+                  </Text>
+                </div>
+                <div className="rounded-2xl bg-white/80 p-4 text-sm text-stone-600">
+                  Карта будет доступна после финализации адреса.
+                </div>
               </div>
-              <div className="rounded-2xl bg-white/80 p-4 text-sm text-stone-600">
-                Карта будет доступна после финализации адреса.
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </Container>
       </section>
 
       <section id="lead-form" className="py-16">
         <Container>
-          <div className="rounded-3xl border border-sand-100 bg-white/95 p-8 shadow-[0_18px_50px_-36px_rgba(43,42,40,0.4)]">
-            <SectionHeader
-              eyebrow="Мы вам перезвоним"
-              title="Оставьте заявку на подбор номера"
-              subtitle="Уточним даты, пожелания и предложим лучший вариант проживания."
-            />
-            <div className="mt-8">
-              <LeadForm />
-            </div>
-          </div>
+          <Card className="shadow-[0_18px_50px_-36px_rgba(43,42,40,0.4)]">
+            <CardContent className="pt-8">
+              <SectionHeader
+                eyebrow="Мы вам перезвоним"
+                title="Оставьте заявку на подбор номера"
+                subtitle="Уточним даты, пожелания и предложим лучший вариант проживания."
+              />
+              <div className="mt-8">
+                <LeadForm />
+              </div>
+            </CardContent>
+          </Card>
         </Container>
       </section>
     </>
