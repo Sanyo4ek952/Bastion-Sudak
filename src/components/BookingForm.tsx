@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { getOccupancyByGuests } from "../shared/lib/pricing/roomPricing";
 import { buttonVariants } from "../shared/ui/button";
+import { Card, CardContent, Muted, Text, useToast } from "../shared/ui";
 import { Stepper } from "./Stepper";
 
 const steps = ["Даты", "Гости", "Услуги", "Оплата"];
@@ -136,6 +137,7 @@ const calculateTotal = ({
 };
 
 export function BookingForm() {
+  const { notify } = useToast();
   const [step, setStep] = useState(0);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomsStatus, setRoomsStatus] = useState<
@@ -303,206 +305,217 @@ export function BookingForm() {
     <div className="space-y-8">
       <Stepper steps={steps} currentStep={step} />
 
-      <div className="rounded-3xl border border-sand-100 bg-white/90 p-6 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]">
-        {step === 0 ? (
-          <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+      <Card className="shadow-[0_16px_40px_-32px_rgba(43,42,40,0.35)]">
+        <CardContent className="pt-6">
+          {step === 0 ? (
+            <div className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-2 text-sm text-stone-600">
+                  Заезд
+                  <input
+                    type="date"
+                    className={baseInputClasses}
+                    aria-invalid={Boolean(errors.checkIn)}
+                    {...register("checkIn")}
+                  />
+                  {errors.checkIn ? (
+                    <span className="text-xs text-rose-600">
+                      {errors.checkIn.message}
+                    </span>
+                  ) : null}
+                </label>
+                <label className="flex flex-col gap-2 text-sm text-stone-600">
+                  Выезд
+                  <input
+                    type="date"
+                    className={baseInputClasses}
+                    aria-invalid={Boolean(errors.checkOut)}
+                    {...register("checkOut")}
+                  />
+                  {errors.checkOut ? (
+                    <span className="text-xs text-rose-600">
+                      {errors.checkOut.message}
+                    </span>
+                  ) : null}
+                </label>
+              </div>
               <label className="flex flex-col gap-2 text-sm text-stone-600">
-                Заезд
-                <input
-                  type="date"
+                Номер
+                <select
                   className={baseInputClasses}
-                  aria-invalid={Boolean(errors.checkIn)}
-                  {...register("checkIn")}
-                />
-                {errors.checkIn ? (
-                  <span className="text-xs text-rose-600">
-                    {errors.checkIn.message}
-                  </span>
+                  aria-invalid={Boolean(errors.roomId)}
+                  disabled={roomsStatus === "loading"}
+                  {...register("roomId")}
+                >
+                  <option value="">
+                    {roomsStatus === "loading"
+                      ? "Загрузка номеров..."
+                      : "Выберите номер"}
+                  </option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.name} · от {room.basePrice.toLocaleString("ru-RU")} ₽
+                      /ночь
+                    </option>
+                  ))}
+                </select>
+                {roomsStatus === "error" ? (
+                  <span className="text-xs text-rose-600">{roomsError}</span>
                 ) : null}
-              </label>
-              <label className="flex flex-col gap-2 text-sm text-stone-600">
-                Выезд
-                <input
-                  type="date"
-                  className={baseInputClasses}
-                  aria-invalid={Boolean(errors.checkOut)}
-                  {...register("checkOut")}
-                />
-                {errors.checkOut ? (
+                {errors.roomId ? (
                   <span className="text-xs text-rose-600">
-                    {errors.checkOut.message}
+                    {errors.roomId.message}
                   </span>
                 ) : null}
               </label>
             </div>
-            <label className="flex flex-col gap-2 text-sm text-stone-600">
-              Номер
-              <select
-                className={baseInputClasses}
-                aria-invalid={Boolean(errors.roomId)}
-                disabled={roomsStatus === "loading"}
-                {...register("roomId")}
+          ) : null}
+
+          {step === 1 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="flex flex-col gap-2 text-sm text-stone-600">
+                Взрослых
+                <input
+                  type="number"
+                  min={0}
+                  max={6}
+                  className={baseInputClasses}
+                  aria-invalid={Boolean(errors.adults)}
+                  {...register("adults")}
+                />
+                {errors.adults ? (
+                  <span className="text-xs text-rose-600">
+                    {errors.adults.message}
+                  </span>
+                ) : null}
+              </label>
+              <label className="flex flex-col gap-2 text-sm text-stone-600">
+                Детей
+                <input
+                  type="number"
+                  min={0}
+                  max={6}
+                  className={baseInputClasses}
+                  aria-invalid={Boolean(errors.children)}
+                  {...register("children")}
+                />
+                {errors.children ? (
+                  <span className="text-xs text-rose-600">
+                    {errors.children.message}
+                  </span>
+                ) : null}
+              </label>
+            </div>
+          ) : null}
+
+          {step === 2 ? (
+            <div className="space-y-3">
+              <label className="flex items-center gap-3 text-sm text-stone-600">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-sand-100 accent-sea-500"
+                  {...register("services.breakfast")}
+                />
+                Завтрак (+{SERVICE_PRICES.breakfast.pricePerPerson} ₽/чел/ночь)
+              </label>
+              <label className="flex items-center gap-3 text-sm text-stone-600">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-sand-100 accent-sea-500"
+                  {...register("services.transfer")}
+                />
+                Трансфер (+{SERVICE_PRICES.transfer.priceFixed} ₽)
+              </label>
+            </div>
+          ) : null}
+
+          {step === 3 ? (
+            <div className="space-y-4">
+              <Muted>
+                Оплата будет подтверждена менеджером. Мы свяжемся для уточнения
+                деталей.
+              </Muted>
+              {priceUnavailable ? (
+                <Text className="text-rose-600">
+                  Цена недоступна. Проверьте даты или выберите другой номер.
+                </Text>
+              ) : null}
+              <button
+                className={buttonVariants({ size: "l" })}
+                type="button"
+                disabled={priceUnavailable}
+                onClick={() =>
+                  notify({
+                    title: "Заявка отправлена",
+                    description: "Менеджер свяжется с вами в ближайшее время.",
+                    variant: "success"
+                  })
+                }
               >
-                <option value="">
-                  {roomsStatus === "loading"
-                    ? "Загрузка номеров..."
-                    : "Выберите номер"}
-                </option>
-                {rooms.map((room) => (
-                  <option key={room.id} value={room.id}>
-                    {room.name} · от {room.basePrice.toLocaleString("ru-RU")} ₽
-                    /ночь
-                  </option>
-                ))}
-              </select>
-              {roomsStatus === "error" ? (
-                <span className="text-xs text-rose-600">{roomsError}</span>
-              ) : null}
-              {errors.roomId ? (
-                <span className="text-xs text-rose-600">
-                  {errors.roomId.message}
-                </span>
-              ) : null}
-            </label>
-          </div>
-        ) : null}
+                Отправить заявку
+              </button>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
-        {step === 1 ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm text-stone-600">
-              Взрослых
-              <input
-                type="number"
-                min={0}
-                max={6}
-                className={baseInputClasses}
-                aria-invalid={Boolean(errors.adults)}
-                {...register("adults")}
-              />
-              {errors.adults ? (
-                <span className="text-xs text-rose-600">
-                  {errors.adults.message}
-                </span>
-              ) : null}
-            </label>
-            <label className="flex flex-col gap-2 text-sm text-stone-600">
-              Детей
-              <input
-                type="number"
-                min={0}
-                max={6}
-                className={baseInputClasses}
-                aria-invalid={Boolean(errors.children)}
-                {...register("children")}
-              />
-              {errors.children ? (
-                <span className="text-xs text-rose-600">
-                  {errors.children.message}
-                </span>
-              ) : null}
-            </label>
-          </div>
-        ) : null}
-
-        {step === 2 ? (
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 text-sm text-stone-600">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-sand-100 accent-sea-500"
-                {...register("services.breakfast")}
-              />
-              Завтрак (+{SERVICE_PRICES.breakfast.pricePerPerson} ₽/чел/ночь)
-            </label>
-            <label className="flex items-center gap-3 text-sm text-stone-600">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-sand-100 accent-sea-500"
-                {...register("services.transfer")}
-              />
-              Трансфер (+{SERVICE_PRICES.transfer.priceFixed} ₽)
-            </label>
-          </div>
-        ) : null}
-
-        {step === 3 ? (
-          <div className="space-y-4">
-            <p className="text-sm text-stone-600">
-              Оплата будет подтверждена менеджером. Мы свяжемся для уточнения
-              деталей.
-            </p>
-            {priceUnavailable ? (
-              <p className="text-sm text-rose-600">
-                Цена недоступна. Проверьте даты или выберите другой номер.
-              </p>
-            ) : null}
-            <button
-              className={buttonVariants({ size: "l" })}
-              type="button"
-              disabled={priceUnavailable}
-            >
-              Отправить заявку
-            </button>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="rounded-3xl border border-sand-100 bg-sand-100/70 p-6">
-        <p className="text-caption uppercase tracking-[0.2em] text-stone-600">
-          Расчет
-        </p>
-        <div className="mt-4 space-y-2 text-sm text-stone-600">
-          <div className="flex items-center justify-between">
-            <span>Ночей</span>
-            <span>{nights && nights > 0 ? nights : "—"}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Цена за ночь</span>
-            <span>
-              {priceState.status === "loading"
-                ? "Загрузка..."
-                : priceState.pricePerNight
-                  ? `${priceState.pricePerNight.toLocaleString("ru-RU")} ₽`
+      <Card variant="soft">
+        <CardContent className="pt-6">
+          <p className="text-caption uppercase tracking-[0.2em] text-stone-600">
+            Расчет
+          </p>
+          <div className="mt-4 space-y-2 text-sm text-stone-600">
+            <div className="flex items-center justify-between">
+              <span>Ночей</span>
+              <span>{nights && nights > 0 ? nights : "—"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Цена за ночь</span>
+              <span>
+                {priceState.status === "loading"
+                  ? "Загрузка..."
+                  : priceState.pricePerNight
+                    ? `${priceState.pricePerNight.toLocaleString("ru-RU")} ₽`
+                    : "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Завтрак</span>
+              <span>
+                {normalizedServices.breakfast
+                  ? `${(
+                      SERVICE_PRICES.breakfast.pricePerPerson *
+                      peopleCount *
+                      (nights ?? 0)
+                    ).toLocaleString("ru-RU")} ₽`
                   : "—"}
-            </span>
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Трансфер</span>
+              <span>
+                {normalizedServices.transfer
+                  ? `${SERVICE_PRICES.transfer.priceFixed.toLocaleString("ru-RU")} ₽`
+                  : "—"}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span>Завтрак</span>
-            <span>
-              {normalizedServices.breakfast
-                ? `${(
-                    SERVICE_PRICES.breakfast.pricePerPerson *
-                    peopleCount *
-                    (nights ?? 0)
-                  ).toLocaleString("ru-RU")} ₽`
-                : "—"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Трансфер</span>
-            <span>
-              {normalizedServices.transfer
-                ? `${SERVICE_PRICES.transfer.priceFixed.toLocaleString("ru-RU")} ₽`
-                : "—"}
-            </span>
-          </div>
-        </div>
 
-        <p className="mt-4 text-caption uppercase tracking-[0.2em] text-stone-600">
-          Итого
-        </p>
-        <p className="mt-2 text-2xl font-semibold text-stone-900">
-          {total.toLocaleString("ru-RU")} ₽
-        </p>
-        <p className="mt-1 text-sm text-stone-600">
-          {nights && nights > 0 ? nights : "—"} ночи ·{" "}
-          {peopleCount > 0 ? peopleCount : "—"} гостей
-        </p>
-        {priceState.error ? (
-          <p className="mt-2 text-xs text-rose-600">{priceState.error}</p>
-        ) : null}
-      </div>
+          <p className="mt-4 text-caption uppercase tracking-[0.2em] text-stone-600">
+            Итого
+          </p>
+          <p className="mt-2 text-2xl font-semibold text-stone-900">
+            {total.toLocaleString("ru-RU")} ₽
+          </p>
+          <p className="mt-1 text-sm text-stone-600">
+            {nights && nights > 0 ? nights : "—"} ночи ·{" "}
+            {peopleCount > 0 ? peopleCount : "—"} гостей
+          </p>
+          {priceState.error ? (
+            <p className="mt-2 text-xs text-rose-600">{priceState.error}</p>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <div className="flex flex-wrap gap-3">
         <button

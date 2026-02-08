@@ -4,9 +4,15 @@ import { ReviewItem } from "../components/ReviewItem";
 import { RoomCard } from "../components/RoomCard";
 import { SearchBar } from "../components/SearchBar";
 import { LeadForm } from "../features/lead-form/LeadForm";
-import { Badge } from "../shared/ui/Badge";
-import { Container } from "../shared/ui/Container";
-import { SectionHeader } from "../shared/ui/SectionHeader";
+import {
+  Badge,
+  Card,
+  CardContent,
+  Container,
+  H1,
+  SectionHeader,
+  Text
+} from "../shared/ui";
 
 const advantages = [
   {
@@ -87,11 +93,11 @@ export default function HomePage() {
             <Badge className="border-white/40 bg-white/20 text-sand-50">
               Bastion Resort
             </Badge>
-            <h1 className="text-sand-50">Современный отдых у моря в Судаке</h1>
-            <p className="text-body-large text-sand-50/90">
+            <H1 className="text-sand-50">Современный отдых у моря в Судаке</H1>
+            <Text className="text-body-large text-sand-50/90">
               Небольшой курортный отель с камерной атмосферой, в 10 минутах от
               пляжа. Подберем номер под ваш стиль путешествия.
-            </p>
+            </Text>
           </div>
           <SearchBar />
         </Container>
@@ -106,17 +112,19 @@ export default function HomePage() {
           />
           <div className="grid gap-4 sm:grid-cols-3">
             {advantages.map((advantage) => (
-              <div
+              <Card
                 key={advantage.title}
-                className="rounded-3xl border border-sand-100 bg-white/90 p-5 shadow-[0_16px_40px_-32px_rgba(43,42,40,0.3)]"
+                className="shadow-[0_16px_40px_-32px_rgba(43,42,40,0.3)]"
               >
-                <p className="text-sm font-semibold text-stone-900">
-                  {advantage.title}
-                </p>
-                <p className="mt-2 text-sm text-stone-600">
-                  {advantage.description}
-                </p>
-              </div>
+                <CardContent className="pt-5">
+                  <Text className="text-sm font-semibold">
+                    {advantage.title}
+                  </Text>
+                  <Text className="mt-2 text-sm text-stone-600">
+                    {advantage.description}
+                  </Text>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </Container>
