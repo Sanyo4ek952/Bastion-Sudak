@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Field, Input, Select } from "../../shared/ui/form";
+
 type RateFormProps = {
   mode: "create" | "edit";
   roomId: string;
@@ -100,30 +102,27 @@ export function SeasonalRateForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <div className="grid gap-3 lg:grid-cols-4">
-        <label className="flex flex-col gap-1 text-sm text-slate-700">
-          Начало
-          <input
+        <Field label="Начало">
+          <Input
             type="date"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            size="s"
             value={start}
             onChange={(event) => setStart(event.target.value)}
             required
           />
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-slate-700">
-          Конец
-          <input
+        </Field>
+        <Field label="Конец">
+          <Input
             type="date"
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            size="s"
             value={end}
             onChange={(event) => setEnd(event.target.value)}
             required
           />
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-slate-700">
-          План питания
-          <select
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+        </Field>
+        <Field label="План питания">
+          <Select
+            size="s"
             value={selectedBoard}
             onChange={(event) =>
               setSelectedBoard(event.target.value as "RO" | "BB" | "HB")
@@ -132,27 +131,23 @@ export function SeasonalRateForm({
             <option value="RO">RO</option>
             <option value="BB">BB</option>
             <option value="HB">HB</option>
-          </select>
-        </label>
+          </Select>
+        </Field>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         {priceVariants.map((variant) => (
-          <label
-            key={variant.occupancy}
-            className="flex flex-col gap-1 text-sm text-slate-700"
-          >
-            {variant.occupancy}
-            <input
+          <Field key={variant.occupancy} label={variant.occupancy}>
+            <Input
               type="number"
               min={0}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+              size="s"
               value={variant.price}
               onChange={(event) =>
                 updatePrice(variant.occupancy, Number(event.target.value))
               }
               required
             />
-          </label>
+          </Field>
         ))}
       </div>
       {error ? (
