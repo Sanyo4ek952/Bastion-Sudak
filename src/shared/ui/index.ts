@@ -1,5 +1,5 @@
 export { Badge } from "./Badge";
-export { Button, buttonVariants } from "./button";
+export { Button, buttonVariants } from "./Button";
 export { Card, CardContent, CardFooter, CardHeader } from "./Card";
 export { Container } from "./Container";
 export {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Badge, H3, Small, Text } from "../shared/ui";
-import { Button } from "../shared/ui/button";
+import { Button } from "../shared/ui";
 
 export type RoomCardProps = {
   name: string;
