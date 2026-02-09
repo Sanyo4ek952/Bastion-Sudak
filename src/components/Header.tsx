@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "../shared/ui";
-import { Button } from "../shared/ui/button";
+import { Button } from "../shared/ui";
 import { Container } from "../shared/ui/Container";
 
 const navItems = [
